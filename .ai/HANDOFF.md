@@ -2,11 +2,11 @@
 
 ## Resume block (read first)
 
-- Repo state: branch `main`, HEAD `f80fe9b`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security`)
+- Repo state: branch `main`, HEAD `6d3a6e7`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security`)
 - Source of truth: `AGENTS.md` → `.ai/`
 - Budget / usage observed: unknown
-- Checkpoint updated: 2026-10-19 22:42
-- Last goal: print all local endpoints at the end of `make up`
+- Checkpoint updated: 2026-10-19 23:00
+- Last goal: rename the project to Kubernetes eBPF Security (repo/name only; descriptive text may still say lab)
 - Annotation language: English (standing preference: no)
 - Context maintenance: automatic
 - Exact next action: attempt one cold-cache `make down && make up` run and record its duration and failures
