@@ -104,3 +104,14 @@ Context: Writing the SIGKILL enforcement policy.
 Evidence: the CRD rejected `operator: In`; supported operators include `Equal`, `Prefix`, `Substring`, and others.
 Pattern / rule: Model alternatives with multiple selectors using `Equal` (selectors are ORed) instead of an `In` list.
 Promotion: none
+
+### L-007 — Smoke tests must retry after a rollout
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: scripts/smoke-test.sh
+Context: `make up` restarts deployments on every run to pick up `:dev` images.
+Evidence: nginx returned 502 (`connect() failed: Connection refused`) for `/api/message` right after a rollout; the same request succeeded 10 seconds later.
+Pattern / rule: Retry the end-to-end API check for a bounded window after a rollout instead of treating the first 502/504 as a product failure. Kubelet readiness does not guarantee Service endpoint propagation.
+Promotion: none

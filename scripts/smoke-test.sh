@@ -22,7 +22,23 @@ echo "[smoke] frontend page responds"
 curl -fsS --max-time 5 "$WEB_URL/" | grep -q "Kubernetes eBPF Security"
 
 echo "[smoke] API reaches PostgreSQL through Cilium policy"
-payload="$(curl -fsS --max-time 10 "$WEB_URL/api/message")"
+# Endpoints can take a moment to propagate after a rollout, so retry instead of
+# failing on the first 502/504 from nginx.
+payload=""
+for _ in $(seq 1 30); do
+  if payload="$(curl -fsS --max-time 10 "$WEB_URL/api/message" 2>/dev/null)"; then
+    break
+  fi
+  payload=""
+  sleep 2
+done
+
+if [[ -z "$payload" ]]; then
+  echo "[smoke] API did not answer through the web proxy" >&2
+  kubectl -n ebpf-lab get pods >&2 || true
+  kubectl -n ebpf-lab logs deployment/web --tail=5 >&2 || true
+  exit 1
+fi
 echo "$payload" | jq .
 
 echo "$payload" | jq -e '.database.connected == true' >/dev/null \
