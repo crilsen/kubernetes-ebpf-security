@@ -21,8 +21,8 @@ step() {
 }
 
 step "check required tools"
-# Idempotent: installs only what is missing, then verifies.
-"$ROOT_DIR/scripts/install-deps.sh"
+# Installation lives in `make deps`; this only verifies the host.
+"$ROOT_DIR/scripts/install-deps.sh" --check
 require_cmd docker kind kubectl helm jq
 docker info >/dev/null 2>&1 || die "Docker is not running; start Docker Desktop (or another daemon) and retry."
 
