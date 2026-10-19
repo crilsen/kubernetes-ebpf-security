@@ -46,7 +46,7 @@ evidence/                    recorded validation runs
 
 **Local target:** Docker (8 GB+ recommended), `kind` ≥ 0.30, `kubectl`, `helm` ≥ 3, `jq`, and ideally the `cilium` and `hubble` CLIs.
 
-On macOS (Homebrew) and Ubuntu/WSL (apt plus the official binaries), install the CLIs with:
+On macOS (Homebrew) and Ubuntu/WSL (apt plus the official binaries), `make up` installs any missing CLI automatically before creating the cluster. To install without starting the lab:
 
 ```bash
 make deps        # installs missing kind, kubectl, helm, cilium-cli, hubble, jq, ...
@@ -64,9 +64,10 @@ The lab pins: kind `v0.33.0`, Kubernetes `v1.35.8`, Cilium `1.20.3`, Tetragon `1
 ## Quick start (local)
 
 ```bash
-make deps   # first time only: install missing CLIs (not Docker)
 make up
 ```
+
+`make up` installs any missing CLI automatically (macOS/Homebrew or Ubuntu/WSL), then creates the cluster.
 
 The command validates prerequisites, creates the kind cluster, installs Cilium (kube-proxy replacement), Hubble, and Tetragon, builds and loads the images, deploys the app, applies the baseline policies, waits for readiness, and runs the smoke test.
 
