@@ -2,14 +2,14 @@
 
 ## Resume block (read first)
 
-- Repo state: branch `main`, no commits yet (initial commit pending); working tree contains the full first slice plus `evidence/2026-10-19-local-baseline`
+- Repo state: branch `main`, HEAD `f80fe9b`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security-lab`)
 - Source of truth: `AGENTS.md` → `.ai/`
 - Budget / usage observed: unknown
 - Checkpoint updated: 2026-10-19 22:30
 - Last goal: implement and validate the local kind target end to end
 - Annotation language: English (standing preference: no)
 - Context maintenance: automatic
-- Exact next action: commit and push the initial repository (public `crilsen/kubernetes-ebpf-security-lab`), then attempt one cold-cache `make down && make up` run
+- Exact next action: attempt one cold-cache `make down && make up` run and record its duration and failures
 - Blocked by: cold image pulls from `quay.io` are very slow on this network; the EKS target has no confirmed AWS account/budget
 - Resume prompt: `Read AGENTS.md and .ai/HANDOFF.md. Continue from the Resume block. Do not rediscover context.`
 
