@@ -45,14 +45,14 @@ evidence/                    recorded validation runs
 
 **Local target:** Docker (8 GB+ recommended), `kind` ≥ 0.30, `kubectl`, `helm` ≥ 3, `jq`, and ideally the `cilium` and `hubble` CLIs.
 
-On macOS, install the CLIs with Homebrew:
+On macOS (Homebrew) and Ubuntu/WSL (apt plus the official binaries), install the CLIs with:
 
 ```bash
 make deps        # installs missing kind, kubectl, helm, cilium-cli, hubble, jq, ...
 make deps-check  # only reports what is missing
 ```
 
-Docker Desktop is not installed by the script; install and start it manually. On Linux, the script prints the equivalent install links.
+Docker is not installed by the script: install and start Docker Desktop (or Docker Engine on Ubuntu/WSL) manually.
 
 Only CLIs run on the host. The application, database, Cilium, Hubble, and Tetragon run inside the kind cluster (Docker containers); the host keeps no runtime state after `make down`.
 

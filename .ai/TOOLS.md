@@ -4,7 +4,7 @@ The rules behind these lists live in `.ai/GUARDRAILS.md`.
 
 ## Local dependencies
 
-Install or verify the host CLIs with `make deps` (Homebrew on macOS) or `make deps-check` to only report. The script never installs a runtime; Docker Desktop must be installed and started manually. `make up` runs the same check before touching the cluster.
+Install or verify the host CLIs with `make deps` (Homebrew on macOS; apt plus official binaries on Ubuntu/WSL) or `make deps-check` to only report. The script never installs a runtime; Docker must be installed and started manually. `make up` runs the same check before touching the cluster.
 
 ## Current availability
 
