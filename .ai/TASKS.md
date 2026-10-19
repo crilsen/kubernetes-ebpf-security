@@ -26,3 +26,4 @@
 - 2026-10-19 — Installed `kind` 0.33.0 and `cilium` 0.20.1; verified Terraform fmt/validate, shellcheck, Go tests, and Kustomize builds.
 - 2026-10-19 — Validated the local target and all four scenarios; recorded evidence.
 - 2026-10-19 — Initialized Git and pushed the public repository `crilsen/kubernetes-ebpf-security`.
+- 2026-10-19 — Added a live denied-path endpoint (`/denied/healthz`): browser gets 504, Hubble shows `EGRESS DENIED`; `make up` now restarts deployments so rebuilt `:dev` images are used.

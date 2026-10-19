@@ -23,6 +23,7 @@ user → web (nginx) → api (Go) → postgres
 3. **Flow visibility** — Hubble shows allowed and dropped flows with policy verdicts.
 4. **Runtime observation** — Tetragon reports process execution without blocking anything.
 5. **Controlled enforcement** — a dedicated workload kills shell execution; the baseline is untouched.
+6. **Denied endpoint** — the browser calls a Service with no allow rule, gets a 504, and Hubble shows the dropped flow.
 
 The demo policies are deliberately narrow and use fictitious data. They are not a production security baseline.
 
@@ -84,6 +85,7 @@ make demo-baseline
 make demo-microsegmentation
 make demo-observe
 make demo-enforce
+make demo-denied
 make down
 ```
 

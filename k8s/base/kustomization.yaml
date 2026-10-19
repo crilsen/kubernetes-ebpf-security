@@ -5,3 +5,4 @@ resources:
   - postgres.yaml
   - api.yaml
   - web.yaml
+  - denied-target.yaml

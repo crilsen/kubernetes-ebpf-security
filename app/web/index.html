@@ -29,6 +29,11 @@
       .dot { width: .55rem; height: .55rem; border-radius: 999px; background: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,.12); }
       .dot.ok { background: #34d399; box-shadow: 0 0 0 4px rgba(52,211,153,.14); }
       .dot.bad { background: #f87171; box-shadow: 0 0 0 4px rgba(248,113,113,.14); }
+      button {
+        margin-top: .6rem; padding: .5rem .9rem; border-radius: 9px; cursor: pointer;
+        border: 1px solid #3b5573; background: #16263a; color: #e6edf7; font: inherit; font-size: .85rem;
+      }
+      button:hover { border-color: #4f7299; }
       footer { margin-top: 1.6rem; font-size: .78rem; color: #6b7c95; }
       a { color: #7dd3fc; }
     </style>
@@ -44,6 +49,15 @@
           <h2>API → PostgreSQL</h2>
           <div class="status"><span id="db-dot" class="dot"></span><span id="db-status">checking…</span></div>
           <pre id="db-detail" style="margin-top:.7rem">Waiting for the API.</pre>
+        </section>
+        <section class="card">
+          <h2>Denied path (live)</h2>
+          <p style="margin:0;color:#9fb0c7;font-size:.85rem">
+            The web pod calls <code>denied-target</code>. Cilium has no allow rule for that
+            path, so the connection is dropped before reaching the pod.
+          </p>
+          <button id="deny-btn">Test denied request</button>
+          <pre id="deny-result" style="margin-top:.7rem">not tested</pre>
         </section>
         <section class="card">
           <h2>Raw response</h2>

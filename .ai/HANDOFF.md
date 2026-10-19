@@ -34,6 +34,7 @@ Deliver a working local lab first: kind + Cilium + Hubble + Tetragon + frontend 
 - Fixed issues found by real runs: Tetragon CRI/`cgidmap`, `matchArgs` operator, macOS `timeout`, Hubble L7, pending Helm releases.
 - Recorded evidence under `evidence/2026-10-19-local-baseline/`.
 - `make up` now forwards and prints every local endpoint: web 8080, API 8082, Hubble UI 8081, Hubble Relay 4245.
+- Added a live denied-path endpoint: the web pod calls `denied-target`, Cilium drops it, the browser gets 504, and Hubble shows `EGRESS DENIED`.
 
 ## Files Changed
 

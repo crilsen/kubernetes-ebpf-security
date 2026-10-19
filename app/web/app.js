@@ -28,3 +28,21 @@ async function refresh() {
 
 refresh();
 setInterval(refresh, 5000);
+
+const denyBtn = document.getElementById("deny-btn");
+const denyResult = document.getElementById("deny-result");
+
+denyBtn.addEventListener("click", async () => {
+  denyResult.textContent = "requesting /denied/healthz …";
+  try {
+    const response = await fetch("/denied/healthz", { cache: "no-store" });
+    const body = await response.text();
+    if (response.status === 504 || response.status === 502) {
+      denyResult.textContent = `blocked as expected: HTTP ${response.status}\nThe connection timed out because Cilium dropped it.`;
+    } else {
+      denyResult.textContent = `unexpected reachable response: HTTP ${response.status}\n${body}`;
+    }
+  } catch (error) {
+    denyResult.textContent = `blocked as expected: ${String(error)}\nThe connection was dropped by Cilium.`;
+  }
+});

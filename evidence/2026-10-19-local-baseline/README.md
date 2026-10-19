@@ -48,6 +48,14 @@ Expected: a dedicated workload is protected by a SIGKILL policy; the baseline is
 
 Observed: `kubectl exec ... /bin/sh` terminated with exit code 137 (SIGKILL); the policy and target namespace were removed afterwards. See [`demo-04-enforce.log`](demo-04-enforce.log).
 
+### `make demo-denied` — Passed
+
+Added after the initial run, on the same cluster.
+
+Expected: the frontend cannot reach `denied-target` because no Cilium allow rule exists; the browser/curl gets a gateway error and Hubble shows the drop.
+
+Observed: `GET /denied/healthz` returned HTTP 504; Hubble recorded `policy-verdict:none EGRESS DENIED` and `Policy denied DROPPED` for `web → denied-target:8080`. The web page exposes the same check through the “Denied path (live)” card. See [`demo-05-denied.log`](demo-05-denied.log).
+
 ## Findings that changed the code
 
 1. **Tetragon needs CRI + cgroup ID mapping on kind.** Without `tetragon.cri.enabled`, `cgidmap.enabled`, and the containerd socket, events had no pod/namespace association and namespace filters returned nothing.

@@ -1,0 +1,72 @@
+# Deliberately unreachable service: the baseline Cilium policy has no allow
+# rule to it, so any request is dropped by default-deny. It exists only to make
+# the denial observable from the browser and Hubble.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: denied-target
+  namespace: ebpf-lab
+  labels:
+    app.kubernetes.io/name: denied-target
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: denied-target
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: denied-target
+        app.kubernetes.io/part-of: kubernetes-ebpf-security
+        ebpf-lab.io/observe: "true"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: denied-target
+          image: ebpf-lab/api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: denied-target
+  namespace: ebpf-lab
+  labels:
+    app.kubernetes.io/name: denied-target
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: denied-target
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

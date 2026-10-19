@@ -1,0 +1,21 @@
+./demos/05-denied-endpoint.sh
+[lab] hubble relay already forwarded at 127.0.0.1:4245
+[lab] ==> confirming the denied target is running
+deployment "denied-target" successfully rolled out
+[lab] ==> calling the denied endpoint through the web pod (expected: 504)
+HTTP 504
+[lab] request was blocked as expected
+[lab] ==> dropped flows recorded by Hubble
+Oct 19 23:20:34.686: ebpf-lab/web-dfdc5557b-2b9cp:48670 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:34.686: ebpf-lab/web-dfdc5557b-2b9cp:48670 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 23:20:35.748: ebpf-lab/web-dfdc5557b-2b9cp:48670 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:35.748: ebpf-lab/web-dfdc5557b-2b9cp:48670 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 23:20:36.844: ebpf-lab/web-dfdc5557b-2b9cp:48674 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:36.844: ebpf-lab/web-dfdc5557b-2b9cp:48674 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 23:20:37.861: ebpf-lab/web-dfdc5557b-2b9cp:48674 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:37.861: ebpf-lab/web-dfdc5557b-2b9cp:48674 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 23:20:47.910: ebpf-lab/web-dfdc5557b-2b9cp:43440 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:47.910: ebpf-lab/web-dfdc5557b-2b9cp:43440 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 23:20:48.932: ebpf-lab/web-dfdc5557b-2b9cp:43440 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 23:20:48.932: ebpf-lab/web-dfdc5557b-2b9cp:43440 (ID:40130) <> ebpf-lab/denied-target-765846d45f-gwnjn:8080 (ID:33217) Policy denied DROPPED (TCP Flags: SYN)
+[lab] ==> denied endpoint scenario complete

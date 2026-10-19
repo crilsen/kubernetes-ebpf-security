@@ -87,6 +87,9 @@ kind load docker-image --name "$CLUSTER_NAME" ebpf-lab/api:dev ebpf-lab/web:dev
 
 step "deploy the application"
 kubectl apply -k "$ROOT_DIR/deployments/local-kind/overlay"
+# Images use a fixed :dev tag, so restart to pick up a freshly loaded build even
+# when the manifest did not change.
+kubectl -n ebpf-lab rollout restart deployment/api deployment/web >/dev/null
 
 step "apply baseline Cilium policies"
 kubectl apply -f "$ROOT_DIR/policies/cilium/baseline"
