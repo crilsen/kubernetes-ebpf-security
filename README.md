@@ -62,7 +62,11 @@ The command validates prerequisites, creates the kind cluster, installs Cilium (
 Then:
 
 - Application: <http://127.0.0.1:8080>
+- API (direct): <http://127.0.0.1:8082/api/message>
 - Hubble UI: <http://127.0.0.1:8081>
+- Hubble Relay: `127.0.0.1:4245` for `hubble observe --server 127.0.0.1:4245`
+
+`make up` prints this endpoint list again at the end of every run.
 
 ```bash
 make demo-list

@@ -101,19 +101,41 @@ kubectl -n ebpf-lab rollout status deployment/web --timeout=180s
 step "run smoke tests"
 WEB_URL="http://127.0.0.1:${WEB_PORT}" "$ROOT_DIR/scripts/smoke-test.sh"
 
-step "expose the Hubble UI locally"
-if [[ -f "$RUN_DIR/hubble-ui.pid" ]] && kill -0 "$(cat "$RUN_DIR/hubble-ui.pid")" 2>/dev/null; then
-  log "Hubble UI port-forward already running"
-else
-  nohup kubectl -n kube-system port-forward svc/hubble-ui 8081:80 \
-    >"$RUN_DIR/hubble-ui.log" 2>&1 &
-  echo $! >"$RUN_DIR/hubble-ui.pid"
-fi
+step "expose local endpoints"
+start_forward() {
+  local name="$1" namespace="$2" service="$3" local_port="$4" remote_port="$5"
+  local pidfile="$RUN_DIR/$name.pid"
+  if [[ -f "$pidfile" ]] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+    log "$name port-forward already running on 127.0.0.1:$local_port"
+  else
+    nohup kubectl -n "$namespace" port-forward "svc/$service" "${local_port}:${remote_port}" \
+      >"$RUN_DIR/$name.log" 2>&1 &
+    echo $! >"$pidfile"
+  fi
+  for _ in $(seq 1 20); do
+    if (exec 3<>/dev/tcp/127.0.0.1/"$local_port") 2>/dev/null; then
+      exec 3>&-
+      return 0
+    fi
+    sleep 1
+  done
+  warn "$name port-forward did not become ready on 127.0.0.1:$local_port; see $RUN_DIR/$name.log"
+}
+
+start_forward api ebpf-lab api "${API_PORT:-8082}" 8080
+start_forward hubble-ui kube-system hubble-ui "${HUBBLE_UI_PORT:-8081}" 80
+start_forward hubble-relay kube-system hubble-relay "${HUBBLE_RELAY_PORT:-4245}" 80
 
 log ""
 log "Local lab is ready."
-log "  Web application : http://127.0.0.1:${WEB_PORT}"
-log "  Hubble UI       : http://127.0.0.1:8081"
-log "  Namespace       : ebpf-lab"
-log "  Teardown        : make down"
-log "  Scenarios       : make demo-list"
+log ""
+log "  Web application   http://127.0.0.1:${WEB_PORT}"
+log "  API direct        http://127.0.0.1:${API_PORT:-8082}/api/message"
+log "  API health        http://127.0.0.1:${API_PORT:-8082}/healthz"
+log "  Hubble UI         http://127.0.0.1:${HUBBLE_UI_PORT:-8081}"
+log "  Hubble Relay      grpc://127.0.0.1:${HUBBLE_RELAY_PORT:-4245} (hubble observe --server)"
+log "  Kubernetes        context kind-$CLUSTER_NAME, namespace ebpf-lab"
+log ""
+log "  Teardown          make down"
+log "  Scenarios         make demo-list"
+log "  Validate          make smoke"
