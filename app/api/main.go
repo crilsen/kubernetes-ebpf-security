@@ -81,7 +81,7 @@ func handleMessage(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	resp := messageResponse{
 		Service: "api",
 		Pod:     envOr("POD_NAME", "unknown"),
-		Message: "Hello from the Kubernetes eBPF Security API",
+		Message: "Hello from the Kubernetes eBPF Security Lab API",
 	}
 
 	var body, serverTime string
