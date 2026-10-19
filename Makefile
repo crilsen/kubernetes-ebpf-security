@@ -4,10 +4,16 @@ SHELL := /usr/bin/env bash
 ROOT := $(abspath .)
 TOFU_DIR := $(ROOT)/deployments/aws-eks/tofu
 
-.PHONY: help up down restart smoke demo-list demo-baseline demo-microsegmentation demo-observe demo-enforce lint fmt verify eks-plan eks-up eks-down eks-smoke
+.PHONY: help deps deps-check up down restart smoke demo-list demo-baseline demo-microsegmentation demo-observe demo-enforce lint fmt verify eks-plan eks-up eks-down eks-smoke
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-24s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+deps: ## Install or verify the local CLIs (Docker must be installed separately)
+	./scripts/install-deps.sh
+
+deps-check: ## Report missing local CLIs without installing anything
+	./scripts/install-deps.sh --check
 
 up: ## Create the local kind lab, install Cilium/Hubble/Tetragon, deploy the app
 	./scripts/local-up.sh
