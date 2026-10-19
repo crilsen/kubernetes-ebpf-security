@@ -5,8 +5,8 @@
 - Repo state: branch `main`, HEAD `f80fe9b`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security-lab`)
 - Source of truth: `AGENTS.md` → `.ai/`
 - Budget / usage observed: unknown
-- Checkpoint updated: 2026-10-19 22:30
-- Last goal: implement and validate the local kind target end to end
+- Checkpoint updated: 2026-10-19 22:42
+- Last goal: print all local endpoints at the end of `make up`
 - Annotation language: English (standing preference: no)
 - Context maintenance: automatic
 - Exact next action: attempt one cold-cache `make down && make up` run and record its duration and failures
@@ -33,6 +33,7 @@ Deliver a working local lab first: kind + Cilium + Hubble + Tetragon + frontend 
 - Validated locally: Cilium 1.20.3, Tetragon 1.7.1, Kubernetes 1.35.8.
 - Fixed issues found by real runs: Tetragon CRI/`cgidmap`, `matchArgs` operator, macOS `timeout`, Hubble L7, pending Helm releases.
 - Recorded evidence under `evidence/2026-10-19-local-baseline/`.
+- `make up` now forwards and prints every local endpoint: web 8080, API 8082, Hubble UI 8081, Hubble Relay 4245.
 
 ## Files Changed
 
