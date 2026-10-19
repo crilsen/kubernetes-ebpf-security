@@ -1,0 +1,11 @@
+# Deny all ingress and egress in the application namespace.
+# Baseline allowances are added explicitly by the other policies in this directory.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: default-deny
+  namespace: ebpf-lab
+spec:
+  endpointSelector: {}
+  ingress: []
+  egress: []

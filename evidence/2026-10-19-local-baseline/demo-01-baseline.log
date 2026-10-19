@@ -1,0 +1,45 @@
+./demos/01-baseline.sh
+[lab] hubble relay already forwarded at 127.0.0.1:4245
+[lab] ==> baseline request: client -> web -> api -> postgres
+{
+  "service": "api",
+  "pod": "api-57b7446bc7-wg4sv",
+  "message": "Hello from the Kubernetes eBPF Security Lab API",
+  "database": {
+    "connected": true,
+    "message": "Hello from PostgreSQL inside the eBPF security lab",
+    "serverTime": "2026-10-19 22:20:41 UTC"
+  }
+}
+[lab] ==> allowed flows recorded by Hubble (namespace ebpf-lab)
+Oct 19 22:20:36.577: 10.244.0.108:55202 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:36.578: 10.244.0.108:55202 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:36.578: 10.244.0.108:55202 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:36.579: 10.244.0.108:55202 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:36.588: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: SYN)
+Oct 19 22:20:36.588: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:36.588: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:36.685: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:36.685: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:36.686: 10.244.0.108:55204 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:41.627: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: SYN)
+Oct 19 22:20:41.628: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:41.628: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:41.628: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-endpoint FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25 (ID:18419) <> ebpf-lab/api:8080 (world) pre-xlate-fwd TRACED (TCP)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) policy-verdict:L3-L4 EGRESS ALLOWED (TCP Flags: SYN)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) policy-verdict:L3-L4 INGRESS ALLOWED (TCP Flags: SYN)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: SYN)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) <- ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: SYN, ACK)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:41.628: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:41.631: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) <- ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:41.631: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:41.631: 10.244.0.108:64408 (remote-node) <- ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, PSH)
+Oct 19 22:20:41.631: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) <- ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:41.631: ebpf-lab/web-5b6b777b9b-lvr25:58622 (ID:18419) -> ebpf-lab/api-57b7446bc7-wg4sv:8080 (ID:50649) to-endpoint FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:41.631: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK)
+Oct 19 22:20:41.632: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:41.632: 10.244.0.108:64408 (world) -> ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-endpoint FORWARDED (TCP Flags: ACK, FIN)
+Oct 19 22:20:41.632: 10.244.0.108:64408 (remote-node) <- ebpf-lab/web-5b6b777b9b-lvr25:8080 (ID:18419) to-overlay FORWARDED (TCP Flags: ACK, FIN)
+[lab] ==> baseline scenario complete

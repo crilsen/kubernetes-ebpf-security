@@ -1,0 +1,48 @@
+# Controlled enforcement demo. Applies only to the dedicated enforce namespace,
+# so the baseline application is never affected by this policy.
+#
+# It kills any exec of a shell in pods labeled app=runtime-target. That is a
+# narrow demonstration, not a general shell-prevention control.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: deny-shell-exec
+spec:
+  podSelector:
+    matchLabels:
+      ebpf-lab.io/enforce-target: "true"
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/bin/sh"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/bin/bash"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/usr/bin/sh"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/usr/bin/bash"
+          matchActions:
+            - action: Sigkill

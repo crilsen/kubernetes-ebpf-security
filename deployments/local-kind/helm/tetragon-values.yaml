@@ -1,0 +1,21 @@
+# Tetragon values for the kind target. Version is pinned by scripts/local-up.sh.
+# Observation is enabled by default; enforcement comes only from the explicit
+# policies under policies/tetragon/.
+tetragon:
+  # kind nodes run containerd; enabling CRI lets Tetragon map containers to pods,
+  # which is required for pod/namespace selectors and readable events.
+  cri:
+    enabled: true
+    socketHostPath: /run/containerd/containerd.sock
+  # cgroup v2 (kind and AL2023) needs cgroup IDs for pod association.
+  cgidmap:
+    enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+tetragonOperator:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi

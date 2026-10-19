@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ebpf-lab-enforce
+  labels:
+    app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runtime-target
+  namespace: ebpf-lab-enforce
+  labels:
+    app.kubernetes.io/name: runtime-target
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ebpf-lab.io/enforce-target: "true"
+  template:
+    metadata:
+      labels:
+        ebpf-lab.io/enforce-target: "true"
+        app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: target
+          image: nginx:1.29-alpine
+          command: ["sleep", "infinity"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi

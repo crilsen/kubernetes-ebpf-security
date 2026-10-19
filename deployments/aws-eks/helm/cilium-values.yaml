@@ -1,0 +1,20 @@
+# Cilium values for the EKS target. Cilium is the primary CNI with AWS ENI IPAM;
+# the AWS VPC CNI is never installed (see bootstrap_self_managed_addons in tofu).
+# scripts/eks-up.sh appends k8sServiceHost, k8sServicePort, and the IRSA annotation.
+cluster:
+  name: ebpf-lab
+kubeProxyReplacement: true
+routingMode: native
+eni:
+  enabled: true
+ipam:
+  mode: eni
+egressMasqueradeInterfaces: eth0
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+operator:
+  replicas: 2

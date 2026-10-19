@@ -1,0 +1,106 @@
+# Learnings
+
+Append-only buffer of reusable, non-obvious learnings captured while working, so future sessions and tools do not rediscover them. This is not task state (`TASKS.md`), not a session handoff (`HANDOFF.md`), and not a durable decision record (`DECISIONS.md`).
+
+## How to use
+
+- Append one entry per learning. Do not rewrite or delete entries; to correct one, mark it `superseded` and add a new entry.
+- Capture only learnings that are non-obvious and likely to recur. Skip anything already stated in `CONVENTIONS.md`, `DECISIONS.md`, `TOOLS.md`, or `VALIDATION.md`.
+- Keep each entry short and evidence-based. Prefer `observed` facts over speculation.
+- This file is a buffer, not a permanent home: promote durable learnings and keep the entry as a breadcrumb.
+
+## Entry format
+
+```text
+### L-001 — <short title>
+Date: YYYY-MM-DD
+Status: active | superseded | promoted
+Confidence: observed | inferred
+Scope: repo | <path-or-glob> | <technology>
+Context: <what was being done>
+Evidence: <file:line, command output, or concrete observation>
+Pattern / rule: <the reusable takeaway>
+Promotion: none | CONVENTIONS.md | DECISIONS.md#ADR-nnn | TOOLS.md | VALIDATION.md
+```
+
+## Promotion rules
+
+- Recurring pattern → `CONVENTIONS.md`
+- Durable architectural choice → `DECISIONS.md` (ADR), cross-referenced here
+- Safe or restricted command rule → `TOOLS.md`
+- Completion or validation check → `VALIDATION.md`
+
+After promotion, set the entry to `Status: promoted` and keep it as a breadcrumb; do not duplicate the rule body.
+
+## Compaction
+
+- Keep at most 40 active entries. When exceeded, consolidate related entries, promote what is durable, and mark the rest `superseded`.
+- Compaction means summarizing and promoting, not erasing history. Record the compaction in `HANDOFF.md`.
+
+## Entries
+
+### L-001 — `contexto.md` is the only scope source
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: repo
+Context: Adopting the context layer in an otherwise empty repository.
+Evidence: the directory contains only `AGENTS.md`, `contexto.md`, and `.ai/`; no code, IaC, or manifests.
+Pattern / rule: Read `contexto.md` before any implementation work and treat it as the draft PRD; do not invent scope or duplicate it into a second document.
+Promotion: none
+
+### L-002 — Local prerequisites are incomplete
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: local-kind
+Context: Checking whether the kind-based lab can be validated.
+Evidence: `kind` and `cilium` are not on `PATH`; `tofu` and `yq` are also missing, while Docker, kubectl, helm, terraform, and the AWS CLI are present.
+Pattern / rule: Run `make up` only after installing `kind` and the Cilium CLI; record `helm` v4 chart-compatibility checks before pinning charts.
+Promotion: TOOLS.md, VALIDATION.md
+
+### L-003 — Tetragon on kind needs CRI and cgroup ID mapping
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: Tetragon events had no pod or namespace association; `tetra getevents --namespace ebpf-lab` returned nothing.
+Evidence: logs showed `FindCgroupID: found path without matching pod id`; after setting `tetragon.cri.enabled=true`, `cri.socketHostPath=/run/containerd/containerd.sock`, and `cgidmap.enabled=true`, events showed pod names and namespace filters worked.
+Pattern / rule: On kind (and AL2023), enable CRI socket access and cgidmap in the Tetragon chart values; otherwise pod selectors and namespace filters silently match nothing.
+Promotion: none
+
+### L-004 — Slow first image pulls can leave Helm releases pending
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: Installing Cilium on a cold kind cluster on a slow `quay.io` link.
+Evidence: `helm -n kube-system list` showed `pending-install`; a later `helm upgrade` failed with "another operation in progress". The successful run uninstalled the release first. `local-up.sh` now reconciles `pending-*` before installing.
+Pattern / rule: Expect tens of minutes for the first pull; never start a second install blindly. Clear pending releases instead.
+Promotion: none
+
+### L-005 — Hubble HTTP flows require an L7 policy
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: policies/cilium
+Context: `hubble observe --protocol http` returned nothing for a working request path.
+Evidence: the same traffic appeared as L3/L4 `policy-verdict` and `to-endpoint` flows; no HTTP layer was parsed.
+Pattern / rule: Use L3/L4 filters for demos unless an explicit L7 policy or visibility annotation is in place.
+Promotion: none
+
+### L-006 — Tetragon matchArgs has no `In` operator
+
+Date: 2026-10-19
+Status: active
+Confidence: observed
+Scope: policies/tetragon
+Context: Writing the SIGKILL enforcement policy.
+Evidence: the CRD rejected `operator: In`; supported operators include `Equal`, `Prefix`, `Substring`, and others.
+Pattern / rule: Model alternatives with multiple selectors using `Equal` (selectors are ORed) instead of an `In` list.
+Promotion: none

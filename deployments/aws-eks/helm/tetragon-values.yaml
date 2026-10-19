@@ -1,0 +1,16 @@
+# Tetragon values for the EKS target. Same policies as the local target.
+tetragon:
+  cri:
+    enabled: true
+    socketHostPath: /run/containerd/containerd.sock
+  cgidmap:
+    enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+tetragonOperator:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi

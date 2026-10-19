@@ -1,0 +1,15 @@
+./scripts/smoke-test.sh
+[smoke] waiting for http://127.0.0.1:8080/healthz
+[smoke] frontend page responds
+[smoke] API reaches PostgreSQL through Cilium policy
+{
+  "service": "api",
+  "pod": "api-57b7446bc7-wg4sv",
+  "message": "Hello from the Kubernetes eBPF Security Lab API",
+  "database": {
+    "connected": true,
+    "message": "Hello from PostgreSQL inside the eBPF security lab",
+    "serverTime": "2026-10-19 22:20:36 UTC"
+  }
+}
+[smoke] PASS: baseline frontend -> API -> PostgreSQL works

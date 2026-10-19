@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kubernetes eBPF Security Lab</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; display: grid; place-items: center;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: radial-gradient(1200px 600px at 20% 0%, #17324a 0%, #0b1220 55%, #070b14 100%);
+        color: #e6edf7;
+      }
+      main { width: min(720px, 92vw); padding: 2rem 0; }
+      .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .72rem; color: #6ee7b7; }
+      h1 { margin: .4rem 0 .2rem; font-size: clamp(1.7rem, 4vw, 2.5rem); line-height: 1.1; }
+      p.lead { color: #9fb0c7; margin-top: .4rem; }
+      .cards { display: grid; gap: 1rem; margin-top: 1.8rem; }
+      .card {
+        background: rgba(18, 29, 45, .85); border: 1px solid #24344b; border-radius: 14px;
+        padding: 1.1rem 1.2rem; backdrop-filter: blur(6px);
+      }
+      .card h2 { margin: 0 0 .5rem; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: #8aa0bd; }
+      code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: .86rem; color: #d7e3f4; }
+      .status { display: inline-flex; align-items: center; gap: .45rem; font-size: .82rem; }
+      .dot { width: .55rem; height: .55rem; border-radius: 999px; background: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,.12); }
+      .dot.ok { background: #34d399; box-shadow: 0 0 0 4px rgba(52,211,153,.14); }
+      .dot.bad { background: #f87171; box-shadow: 0 0 0 4px rgba(248,113,113,.14); }
+      footer { margin-top: 1.6rem; font-size: .78rem; color: #6b7c95; }
+      a { color: #7dd3fc; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Cilium · Hubble · Tetragon</div>
+      <h1>Kubernetes eBPF Security Lab</h1>
+      <p class="lead">Frontend → API → PostgreSQL. Every hop is visible, and the network policy decides which hops exist.</p>
+
+      <div class="cards">
+        <section class="card">
+          <h2>API → PostgreSQL</h2>
+          <div class="status"><span id="db-dot" class="dot"></span><span id="db-status">checking…</span></div>
+          <pre id="db-detail" style="margin-top:.7rem">Waiting for the API.</pre>
+        </section>
+        <section class="card">
+          <h2>Raw response</h2>
+          <pre id="raw">—</pre>
+        </section>
+      </div>
+
+      <footer>Demo data only. This page is not a production configuration.</footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

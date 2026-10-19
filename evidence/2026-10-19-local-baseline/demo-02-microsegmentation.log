@@ -1,0 +1,23 @@
+./demos/02-microsegmentation.sh
+[lab] hubble relay already forwarded at 127.0.0.1:4245
+[lab] ==> allowed path: web -> api
+{"status":"ok"}
+
+[lab] ==> starting an unlabeled probe pod inside the same namespace
+[lab] ==> probe -> api (expected to fail: DNS and API egress are denied)
+curl: (28) Connection timed out after 5002 milliseconds
+command terminated with exit code 28
+[lab] probe was denied as expected (exit code 28)
+[lab] ==> dropped flows recorded by Hubble
+Oct 19 22:20:43.499: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 22:20:43.499: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 22:20:44.503: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 22:20:44.503: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 22:20:45.528: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 22:20:45.528: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 22:20:46.551: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 22:20:46.551: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) Policy denied DROPPED (TCP Flags: SYN)
+Oct 19 22:20:47.575: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) policy-verdict:none EGRESS DENIED (TCP Flags: SYN)
+Oct 19 22:20:47.575: ebpf-lab/probe:41248 (ID:3764) <> ebpf-lab/api-57b7446bc7-rrpgl:8080 (ID:50649) Policy denied DROPPED (TCP Flags: SYN)
+[lab] ==> cleanup
+[lab] ==> microsegmentation scenario complete

@@ -1,0 +1,11 @@
+date: 2026-10-19T22:20:35Z
+host: Darwin 25.2.0 arm64
+docker: Docker version 29.7.2, build a7dcaa6
+kind: kind v0.33.0 go1.27.0 darwin/arm64
+kubectl: v1.35.7-dispatcher
+helm: v4.3.0+gbec5b06
+cilium-cli: cilium-cli: v0.20.1 compiled with go1.27.1 on darwin/arm64
+hubble: hubble 1.20.2 compiled with go1.27.1 on darwin/arm64
+kubernetes: v1.35.8
+cilium-chart: cilium-1.20.3
+tetragon-chart: tetragon-1.7.1

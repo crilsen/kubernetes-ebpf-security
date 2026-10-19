@@ -1,0 +1,16 @@
+./demos/04-runtime-enforce.sh
+[lab] ==> creating the dedicated enforcement namespace and workload
+namespace/ebpf-lab-enforce created
+deployment.apps/runtime-target created
+Waiting for deployment "runtime-target" rollout to finish: 0 of 1 updated replicas are available...
+deployment "runtime-target" successfully rolled out
+[lab] ==> applying the enforcement policy (SIGKILL on shell exec)
+tracingpolicy.cilium.io/deny-shell-exec created
+[lab] ==> capturing Tetragon events while attempting /bin/sh (expected to be killed)
+command terminated with exit code 137
+[lab] ==> Tetragon events
+🚀 process ebpf-lab-enforce/runtime-target-6fd64c5b97-qlqnn /proc/self/fd/6 init
+💥 exit    ebpf-lab-enforce/runtime-target-6fd64c5b97-qlqnn /proc/self/fd/6 init 0
+[lab] shell execution was blocked (exit code 137)
+[lab] ==> cleanup (policy and target workload removed)
+[lab] ==> enforcement scenario complete

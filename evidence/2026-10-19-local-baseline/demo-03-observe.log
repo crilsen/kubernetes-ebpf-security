@@ -1,0 +1,21 @@
+./demos/03-runtime-observe.sh
+[lab] ==> confirming the observation policy is loaded
+[lab] ==> capturing Tetragon events for 10s and executing a process meanwhile
+[lab] ==> Tetragon events
+🚀 process ebpf-lab/api-57b7446bc7-rrpgl /proc/self/fd/6 init
+💥 exit    ebpf-lab/api-57b7446bc7-rrpgl /proc/self/fd/6 init 0
+🚀 process ebpf-lab/api-57b7446bc7-rrpgl /bin/ls /
+💥 exit    ebpf-lab/api-57b7446bc7-rrpgl /bin/ls / 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab"
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab" 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab"
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab" 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /proc/self/fd/6 init 0
+🚀 process ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab"
+💥 exit    ebpf-lab/postgres-6ff8bcd76b-8r77q /usr/local/bin/pg_isready "-U lab -d lab" 0
+[lab] ==> runtime observation scenario complete

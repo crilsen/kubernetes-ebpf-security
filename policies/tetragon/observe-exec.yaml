@@ -1,0 +1,19 @@
+# Observation-only runtime policy: report process execution in the lab namespace.
+# No action beyond event reporting (Post), so nothing is blocked here.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: observe-process-exec
+spec:
+  podSelector:
+    matchLabels:
+      ebpf-lab.io/observe: "true"
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchActions:
+            - action: Post

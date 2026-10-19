@@ -1,0 +1,51 @@
+== kubectl get nodes ==
+NAME                     STATUS   ROLES           AGE   VERSION
+ebpf-lab-control-plane   Ready    control-plane   86m   v1.35.8
+ebpf-lab-worker          Ready    <none>          86m   v1.35.8
+
+== kubectl get pods -n ebpf-lab ==
+NAME                        READY   STATUS    RESTARTS   AGE   IP             NODE              NOMINATED NODE   READINESS GATES
+api-57b7446bc7-rrpgl        1/1     Running   0          13m   10.244.1.122   ebpf-lab-worker   <none>           <none>
+api-57b7446bc7-wg4sv        1/1     Running   0          13m   10.244.1.84    ebpf-lab-worker   <none>           <none>
+postgres-6ff8bcd76b-8r77q   1/1     Running   0          13m   10.244.1.4     ebpf-lab-worker   <none>           <none>
+web-5b6b777b9b-lvr25        1/1     Running   0          13m   10.244.1.70    ebpf-lab-worker   <none>           <none>
+
+== cilium status ==
+    /¯¯\
+ /¯¯\__/¯¯\    Cilium:             OK
+ \__/¯¯\__/    Operator:           OK
+ /¯¯\__/¯¯\    Envoy DaemonSet:    OK
+ \__/¯¯\__/    Hubble Relay:       OK
+    \__/       ClusterMesh:        disabled
+
+DaemonSet              cilium                   Desired: 2, Ready: 2/2, Available: 2/2
+DaemonSet              cilium-envoy             Desired: 2, Ready: 2/2, Available: 2/2
+Deployment             cilium-operator          Desired: 1, Ready: 1/1, Available: 1/1
+Deployment             hubble-relay             Desired: 1, Ready: 1/1, Available: 1/1
+Deployment             hubble-ui                Desired: 1, Ready: 1/1, Available: 1/1
+Containers:            cilium                   Running: 2
+                       cilium-envoy             Running: 2
+                       cilium-operator          Running: 1
+                       clustermesh-apiserver    
+                       hubble-relay             Running: 1
+                       hubble-ui                Running: 1
+Cluster Pods:          9/10 managed by Cilium
+Helm chart version:    1.20.3
+Image versions         cilium             quay.io/cilium/cilium:v1.20.3@sha256:95cfa5c2427cc6b452c00908778d0566311f572589284af949d06a013db1a849: 2
+                       cilium-envoy       quay.io/cilium/cilium-envoy:v1.38.6-1791537840-00e749f11f69334c625e53fc1ce2fc6c7f34a51f@sha256:d6c8c0c91954d1885026d82a31b341f37dcd34a4b127fdaf1587e43ddd224cef: 2
+                       cilium-operator    quay.io/cilium/operator-generic:v1.20.3@sha256:efdd8d89d6d8f63d21a065fa2f9e17614a2b3ac9371b221af9355f63829e2dbc: 1
+                       hubble-relay       quay.io/cilium/hubble-relay:v1.20.3@sha256:c6f819d9c5e0b35ccac63b9f2f1ae213fd9be50588e15d5a444d5d305ad317b5: 1
+                       hubble-ui          quay.io/cilium/hubble-ui-backend:v0.13.6@sha256:83b3fc763f3d49948c306bf49b08277383e195904b9ca5c0c0022b2112628787: 1
+                       hubble-ui          quay.io/cilium/hubble-ui:v0.13.6@sha256:049a80a03585c043d0c3121bdc518c72b0fd42bae07e4bcce0fdb8f1e88041d0: 1
+
+== policies ==
+NAME                      AGE   VALID
+allow-api-from-web        13m   True
+allow-api-to-postgres     13m   True
+allow-dns                 13m   True
+allow-postgres-from-api   13m   True
+allow-web-ingress         13m   True
+allow-web-to-api          13m   True
+default-deny              13m   False
+NAME                   AGE
+observe-process-exec   13m

@@ -1,0 +1,97 @@
+# Baseline application flows:
+#   client -> web -> api -> postgres
+# Any other path in the namespace stays denied by default-deny.yaml.
+#
+# web ingress is intentionally reachable from outside the cluster because it is
+# the demo entrypoint (kind NodePort today, Kubernetes Service on EKS). The
+# ingress rule allows no payload identity beyond that port.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-web-ingress
+  namespace: ebpf-lab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  ingress:
+    - fromEntities:
+        - world
+        - cluster
+        - host
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-web-to-api
+  namespace: ebpf-lab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: api
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-api-from-web
+  namespace: ebpf-lab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: api
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: web
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-api-to-postgres
+  namespace: ebpf-lab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: api
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: postgres
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-postgres-from-api
+  namespace: ebpf-lab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: api
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
