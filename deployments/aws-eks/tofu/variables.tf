@@ -55,7 +55,7 @@ variable "tags" {
   description = "Extra tags applied to every resource."
   type        = map(string)
   default = {
-    Project   = "kubernetes-ebpf-security-lab"
+    Project   = "kubernetes-ebpf-security"
     ManagedBy = "terraform"
     Purpose   = "demo"
   }

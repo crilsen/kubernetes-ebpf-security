@@ -2,14 +2,18 @@
 
 ## Identity
 
-- **Name:** kubernetes-ebpf-security-lab
+- **Name:** kubernetes-ebpf-security
+- **Former name:** Kubernetes eBPF Security Lab — the source brief (`contexto.md`) keeps the original title.
 - **Objective:** A portfolio lab that demonstrates network and runtime security and observability in Kubernetes with Cilium, Hubble, and Tetragon.
 - **Repository shape:** One repository with the application, policies, and scenarios shared between two independent deployment targets: local kind and AWS EKS.
-- **Status:** Context adopted, no implementation. The repository contains only `AGENTS.md`, `contexto.md`, and `.ai/`.
+- **Status:** Local target implemented and validated on kind; EKS target scaffolded and validated at the IaC level, never applied.
 
 ## Observed
 
-- The directory is **not** a Git repository (`git status` → `not a git repository`) as of 2026-10-19.
+- Git repository (`main`), published at `github.com/crilsen/kubernetes-ebpf-security`.
+- Local target validated end to end: Cilium 1.20.3, Hubble, Tetragon 1.7.1, Kubernetes 1.35.8.
+- Evidence from the validated run lives in `evidence/2026-10-19-local-baseline/`.
+- Internal identifiers keep the `ebpf-lab` name (namespace, cluster, labels); only the project name changed.
 - No application source, Kubernetes manifests, policies, IaC, scripts, CI/CD, or tests exist yet.
 - `contexto.md` (Portuguese) is the implementation brief supplied by the repository owner. It is the only source of scope.
 - Local tooling observed on the author machine: `git`, `docker` 29.7.2, `kubectl` v1.35.7 (Google Cloud SDK build), `helm` v4.3.0, `terraform` v1.16.1, `aws` CLI 2.36.44, `jq`, `shellcheck`, `node`, `npm`, `python3`. **Missing:** `kind`, `cilium` CLI, `tofu`, `yq`.

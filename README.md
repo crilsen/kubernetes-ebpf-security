@@ -1,4 +1,4 @@
-# Kubernetes eBPF Security Lab
+# Kubernetes eBPF Security
 
 A portfolio lab for network and runtime security in Kubernetes with **Cilium**, **Hubble**, and **Tetragon**. One repository, one application, two deployment targets:
 

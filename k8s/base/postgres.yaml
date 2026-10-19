@@ -33,7 +33,7 @@ metadata:
   namespace: ebpf-lab
   labels:
     app.kubernetes.io/name: postgres
-    app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
 spec:
   replicas: 1
   selector:
@@ -45,7 +45,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: postgres
-        app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+        app.kubernetes.io/part-of: kubernetes-ebpf-security
         ebpf-lab.io/observe: "true"
     spec:
       automountServiceAccountToken: false
@@ -110,7 +110,7 @@ metadata:
   namespace: ebpf-lab
   labels:
     app.kubernetes.io/name: postgres
-    app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
 spec:
   type: ClusterIP
   selector:

@@ -3,6 +3,6 @@ kind: Namespace
 metadata:
   name: ebpf-lab
   labels:
-    app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
     # Tetragon observe policy targets this label.
     ebpf-lab.io/observe: "true"

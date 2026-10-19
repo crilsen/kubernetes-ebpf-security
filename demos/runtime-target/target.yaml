@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: ebpf-lab-enforce
   labels:
-    app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -21,7 +21,7 @@ spec:
     metadata:
       labels:
         ebpf-lab.io/enforce-target: "true"
-        app.kubernetes.io/part-of: kubernetes-ebpf-security-lab
+        app.kubernetes.io/part-of: kubernetes-ebpf-security
     spec:
       automountServiceAccountToken: false
       securityContext:

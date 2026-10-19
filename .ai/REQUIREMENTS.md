@@ -43,11 +43,11 @@ Risks / Open questions:
 
 | ID | Title | Status | Owner | File |
 | --- | --- | --- | --- | --- |
-| PRD-001 | Kubernetes eBPF Security Lab | Approved | repository owner | [`contexto.md`](../contexto.md) |
+| PRD-001 | Kubernetes eBPF Security | Approved | repository owner | [`contexto.md`](../contexto.md) |
 
 ## Current requirements
 
-### PRD-001 — Kubernetes eBPF Security Lab
+### PRD-001 — Kubernetes eBPF Security
 
 - **Status:** Approved (confirmed by the owner on 2026-10-19).
 - **Location:** `contexto.md` at the repository root, in Portuguese. This is the authoritative scope document until a `docs/prd/` copy exists.

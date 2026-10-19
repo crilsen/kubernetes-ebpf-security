@@ -2,7 +2,7 @@
 
 ## Resume block (read first)
 
-- Repo state: branch `main`, HEAD `f80fe9b`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security-lab`)
+- Repo state: branch `main`, HEAD `f80fe9b`, working tree clean, pushed to public `origin` (`github.com/crilsen/kubernetes-ebpf-security`)
 - Source of truth: `AGENTS.md` → `.ai/`
 - Budget / usage observed: unknown
 - Checkpoint updated: 2026-10-19 22:42

@@ -19,7 +19,7 @@ done
 [[ "$ready" == "1" ]] || { echo "[smoke] frontend did not become ready at $WEB_URL" >&2; exit 1; }
 
 echo "[smoke] frontend page responds"
-curl -fsS --max-time 5 "$WEB_URL/" | grep -q "Kubernetes eBPF Security Lab"
+curl -fsS --max-time 5 "$WEB_URL/" | grep -q "Kubernetes eBPF Security"
 
 echo "[smoke] API reaches PostgreSQL through Cilium policy"
 payload="$(curl -fsS --max-time 10 "$WEB_URL/api/message")"

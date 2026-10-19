@@ -28,7 +28,7 @@ docker info >/dev/null 2>&1 || die "Docker is not running; start Docker Desktop 
 # next run can install cleanly.
 reconcile_pending_release() {
   local name="$1" status
-  status="$(helm -n kube-system status "$name" -o json 2>/dev/null | jq -r '.info.status // empty')"
+  status="$(helm -n kube-system status "$name" -o json 2>/dev/null | jq -r '.info.status // empty' || true)"
   if [[ "$status" == pending-* ]]; then
     warn "Helm release $name is in $status state; removing it before reinstalling"
     helm uninstall "$name" -n kube-system --wait || true
