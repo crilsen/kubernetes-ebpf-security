@@ -142,7 +142,7 @@ Record real runs under `evidence/YYYY-MM-DD-<target>-<scenario>/`. Nothing is ma
 - **First run is slow.** Pulling Cilium/Tetragon images from `quay.io` inside kind can take tens of minutes. Later runs are fast. If a pull is interrupted, `make up` clears a `pending-*` Helm release automatically before reinstalling.
 - **Docker not running / low memory.** Start Docker Desktop and give it at least ~8 GB.
 - **Ports 8080/8081 busy.** Stop the other process or override `WEB_PORT` for the smoke test.
-- **Tetragon shows no events.** The local values enable the containerd CRI socket and `cgidmap`; both are required for pod/namespace association on kind.
+- **Tetragon shows no events.** The local values enable the containerd CRI socket and `cgidmap`; both are required for pod/namespace association on kind. If events show only node names after cluster recreation or upgrades, reinstall the release (`helm uninstall tetragon -n kube-system`, then `make up`).
 - **Hubble shows L3/L4 but no HTTP.** HTTP parsing requires an L7 policy; the baseline demo deliberately shows L3/L4 flows.
 
 ## Known limitations

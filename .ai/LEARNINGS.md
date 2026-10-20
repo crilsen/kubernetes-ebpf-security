@@ -137,3 +137,14 @@ Context: Applying one TracingPolicy to a three-container pod.
 Evidence: shell exec was killed (exit 137) in `front`, `back`, and `api`; the policy has no container selector.
 Pattern / rule: Use `podSelector` for pod-wide enforcement; a per-container rule would need a different mechanism.
 Promotion: none
+
+### L-010 — Reinstall Tetragon if events lose pod association
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: After several Helm upgrades and a kind cluster recreation, Tetragon killed shells correctly but exported events with only the node name, so `tetra getevents --namespace` returned nothing.
+Evidence: events showed `ebpf-lab-control-plane` instead of pod names; the CRI/cgidmap values were correct and a DaemonSet restart did not help. `helm uninstall tetragon` followed by a fresh install restored pod/container names.
+Pattern / rule: When Tetragon events lack pod names, reinstall the release instead of only restarting pods. Verify with `tetra getevents --namespace ebpf-lab` before trusting the demo output.
+Promotion: none
