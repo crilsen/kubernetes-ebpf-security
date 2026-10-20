@@ -191,7 +191,7 @@ Context:
 Tetragon has no UI and its events are only visible through `tetra getevents`. The owner asked for a dashboard view of runtime activity.
 
 Decision:
-Install Loki (single binary, filesystem, 1 GiB), Promtail (DaemonSet tailing `/var/run/cilium/tetragon/tetragon.log` via hostPath), Prometheus (scraping Hubble and Tetragon metrics), and Grafana with provisioned datasources and two dashboards: "Tetragon runtime events" (Loki) and "Hubble and Tetragon metrics" (Prometheus). All stay in the `observability` namespace; Grafana is reachable only through a localhost port-forward.
+Install Loki (single binary, filesystem, 1 GiB), Promtail (DaemonSet tailing `/var/run/cilium/tetragon/tetragon.log` via hostPath), Prometheus (scraping Hubble and Tetragon metrics), and Grafana with provisioned datasources and three dashboards: "Hubble flows (live)" (Hubble UI embedded as an iframe), "Tetragon runtime events" (Loki), and "Hubble and Tetragon metrics" (Prometheus). All stay in the `observability` namespace; Grafana is reachable only through a localhost port-forward.
 
 Reasoning:
 Logs answer "what ran" and metrics answer "how much was allowed or dropped", reusing the endpoints both projects already expose. No agent is added to the app pods, and the host stays free of runtime processes.

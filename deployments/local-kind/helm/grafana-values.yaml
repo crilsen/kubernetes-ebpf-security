@@ -4,6 +4,12 @@
 adminUser: admin
 adminPassword: lab-demo-password
 
+grafana.ini:
+  security:
+    allow_embedding: true
+  panels:
+    disable_sanitize_html: true
+
 persistence:
   enabled: false
 
@@ -221,6 +227,29 @@ dashboards:
               "options": {
                 "mode": "markdown",
                 "content": "Prometheus scrapes the Cilium/Hubble metrics endpoint and the Tetragon metrics service every 15s.\n\n- **Flows by verdict** — forwarded vs dropped L3/L4 flows seen by Hubble.\n- **Drops by reason** — policy deny, unreachable, etc.\n- **Tetragon events** — runtime events by type (PROCESS_EXEC, PROCESS_EXIT, ...).\n\nDetailed per-flow inspection stays in the Hubble UI; per-pod process logs stay in the Loki dashboard."
+              }
+            }
+          ]
+        }
+    hubble-flows:
+      json: |
+        {
+          "uid": "hubble-flows",
+          "title": "Hubble flows (live)",
+          "tags": ["hubble", "flows", "ebpf"],
+          "timezone": "browser",
+          "schemaVersion": 39,
+          "version": 1,
+          "refresh": "",
+          "panels": [
+            {
+              "id": 1,
+              "type": "text",
+              "title": "Hubble UI embedded (requires the 8081 port-forward)",
+              "gridPos": { "h": 24, "w": 24, "x": 0, "y": 0 },
+              "options": {
+                "mode": "html",
+                "content": "<iframe src=\"http://localhost:8081/\" title=\"Hubble UI\" style=\"width:100%;height:1200px;border:0;background:#0b1220\"></iframe>"
               }
             }
           ]

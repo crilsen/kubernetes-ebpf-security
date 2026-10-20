@@ -181,3 +181,14 @@ Context: Adding scrape configs through `serverFiles.prometheus.yml`.
 Evidence: Prometheus crash-looped with `field global already set in type config.plain`; the chart already renders `server.global`. Moving the scrape interval there and removing `global` from `serverFiles` fixed it.
 Pattern / rule: Keep global settings under `server.global`; put only `scrape_configs` in `serverFiles.prometheus.yml`.
 Promotion: none
+
+### L-014 — Embedding an iframe in Grafana needs two settings
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: Embedding the Hubble UI in a Grafana text panel.
+Evidence: the panel HTML is sanitized unless `panels.disable_sanitize_html=true`; the Hubble UI sends no `X-Frame-Options`/CSP headers, so it can be embedded. Both were verified in the rendered `grafana.ini`.
+Pattern / rule: Set `security.allow_embedding=true` and `panels.disable_sanitize_html=true`; the iframe URL must be reachable from the browser (localhost port-forward), not from the Grafana pod.
+Promotion: none

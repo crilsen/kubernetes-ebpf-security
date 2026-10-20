@@ -24,8 +24,9 @@ Cilium/Hubble metrics :9965 ─┐                   ▼
 Tetragon metrics :2112 ──────┴→ Prometheus → Grafana
 ```
 
-Grafana has two provisioned dashboards:
+Grafana has three provisioned dashboards:
 
+- **Hubble flows (live)**: the Hubble UI embedded as an iframe (same flow/service map view).
 - **Tetragon runtime events** (Loki): process events with pod/container names.
 - **Hubble and Tetragon metrics** (Prometheus): flows by verdict, drops by reason, Tetragon event rates, and scrape health.
 
@@ -36,7 +37,7 @@ Command: `make obs-check` (see [`obs-check.log`](obs-check.log)).
 | Check | Expected | Observed |
 | --- | --- | --- |
 | Grafana health | `database: ok` | `{"database":"ok","version":"12.3.1"}` |
-| Provisioned dashboards | Both Tetragon dashboards | Found in folder `Tetragon` |
+| Provisioned dashboards | All three Tetragon dashboards | Found in folder `Tetragon` |
 | Prometheus targets | `hubble` and `tetragon` up | `hubble up=1`, `tetragon up=1` |
 | Hubble metrics | Non-zero flow counter | `hubble_flows_processed_total=41234` |
 | Tetragon events in Loki | At least one `process_exec` | 5 events returned |

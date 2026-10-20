@@ -97,11 +97,13 @@ Grafana is provisioned with both datasources and two dashboards:
 
 | Dashboard | Data | Shows |
 | --- | --- | --- |
+| **Hubble flows (live)** | Hubble UI (iframe) | the same flow/service map view as the standalone Hubble UI |
 | **Tetragon runtime events** | Loki | process exec/exit per namespace, pod, and container |
 | **Hubble and Tetragon metrics** | Prometheus | flows by verdict, drops by reason, Tetragon event rates, scrape health |
 
 - Grafana: <http://127.0.0.1:3001> (`admin` / `lab-demo-password`)
 - Dashboards live in the **Tetragon** folder.
+- The **Hubble flows (live)** dashboard embeds the Hubble UI, so it needs the `8081` port-forward (started by `make up`). It is the same view, not a native Grafana panel.
 - Validate everything with `make obs-check`.
 
 What it does **not** show:

@@ -30,3 +30,4 @@
 - 2026-10-20 — Added the multi-container scenario: one pod with `front`/`back`/`api`, Tetragon enforcement in all containers, Cilium deny on container ports 8081/8082, and an explicitly simulated `/policy-sim` 403.
 - 2026-10-20 — Added the runtime dashboard: Grafana + Loki + Promtail shipping Tetragon events, provisioned dashboard, and `make obs-check`.
 - 2026-10-20 — Added Prometheus scraping Hubble flow/drop metrics and Tetragon metrics, with a second Grafana dashboard.
+- 2026-10-20 — Embedded the Hubble UI as a "Hubble flows (live)" dashboard in Grafana (iframe), so flows are visible in the same place as runtime events and metrics.

@@ -18,11 +18,13 @@ curl -fsS --max-time 5 "$GRAFANA_URL/api/health" | jq -e '.database == "ok"' >/d
   || die "Grafana is not healthy at $GRAFANA_URL (run make up first)"
 
 log "==> provisioned dashboards"
-dashboards="$(curl -fsS --max-time 5 -u "$GRAFANA_AUTH" "$GRAFANA_URL/api/search?query=Tetragon")"
+dashboards="$(curl -fsS --max-time 5 -u "$GRAFANA_AUTH" "$GRAFANA_URL/api/search?query=")"
 echo "$dashboards" | jq -r '.[].title' | grep -q "Tetragon runtime events" \
   || die "the Tetragon dashboard is not provisioned"
 echo "$dashboards" | jq -r '.[].title' | grep -q "Hubble and Tetragon metrics" \
   || die "the Hubble metrics dashboard is not provisioned"
+echo "$dashboards" | jq -r '.[].title' | grep -q "Hubble flows (live)" \
+  || die "the embedded Hubble flow dashboard is not provisioned"
 
 log "==> Prometheus scrape targets"
 for job in hubble tetragon; do

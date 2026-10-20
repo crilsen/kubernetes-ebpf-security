@@ -37,6 +37,7 @@ Deliver a working local lab first: kind + Cilium + Hubble + Tetragon + frontend 
 - Added a live denied-path endpoint: the web pod calls `denied-target`, Cilium drops it, the browser gets 504, and Hubble shows `EGRESS DENIED`.
 - Added the multi-container scenario (`make demo-multicontainer`): `front`/`back`/`api` in one pod, enforcement in every container, Cilium deny on 8081/8082, simulated 403 on `/policy-sim`.
 - Added the runtime dashboard (`make obs-up`, `make obs-check`): Grafana 12 + Loki 3 + Promtail tailing Tetragon's JSON log, plus Prometheus scraping Hubble and Tetragon metrics, with two provisioned dashboards.
+- Embedded the Hubble UI as a third Grafana dashboard ("Hubble flows (live)"), using an iframe served by the local 8081 port-forward.
 
 ## Files Changed
 
