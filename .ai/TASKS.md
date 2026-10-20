@@ -28,3 +28,4 @@
 - 2026-10-19 — Initialized Git and pushed the public repository `crilsen/kubernetes-ebpf-security`.
 - 2026-10-19 — Added a live denied-path endpoint (`/denied/healthz`): browser gets 504, Hubble shows `EGRESS DENIED`; `make up` now restarts deployments so rebuilt `:dev` images are used.
 - 2026-10-20 — Added the multi-container scenario: one pod with `front`/`back`/`api`, Tetragon enforcement in all containers, Cilium deny on container ports 8081/8082, and an explicitly simulated `/policy-sim` 403.
+- 2026-10-20 — Added the runtime dashboard: Grafana + Loki + Promtail shipping Tetragon events, provisioned dashboard, and `make obs-check`.

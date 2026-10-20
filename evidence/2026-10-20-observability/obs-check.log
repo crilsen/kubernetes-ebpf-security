@@ -1,0 +1,6 @@
+./scripts/obs-check.sh
+[lab] ==> Grafana health
+[lab] ==> provisioned dashboard
+[lab] ==> Tetragon events in Loki
+events found: 5
+[lab] ==> runtime dashboard OK: http://127.0.0.1:3001 (admin / lab-demo-password)

@@ -36,6 +36,7 @@ Deliver a working local lab first: kind + Cilium + Hubble + Tetragon + frontend 
 - `make up` now forwards and prints every local endpoint: web 8080, API 8082, Hubble UI 8081, Hubble Relay 4245.
 - Added a live denied-path endpoint: the web pod calls `denied-target`, Cilium drops it, the browser gets 504, and Hubble shows `EGRESS DENIED`.
 - Added the multi-container scenario (`make demo-multicontainer`): `front`/`back`/`api` in one pod, enforcement in every container, Cilium deny on 8081/8082, simulated 403 on `/policy-sim`.
+- Added the runtime dashboard (`make obs-up`, `make obs-check`): Grafana 12 + Loki 3 + Promtail tailing Tetragon's JSON log, with a provisioned dashboard.
 
 ## Files Changed
 

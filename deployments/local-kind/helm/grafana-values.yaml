@@ -1,0 +1,135 @@
+# Grafana with a Loki datasource and a provisioned Tetragon dashboard.
+# Demo-only credentials; access is local through a port-forward.
+
+adminUser: admin
+adminPassword: lab-demo-password
+
+persistence:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 512Mi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        uid: loki
+        type: loki
+        access: proxy
+        url: http://loki.observability.svc.cluster.local:3100
+        isDefault: true
+        jsonData:
+          maxLines: 5000
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: tetragon
+        orgId: 1
+        folder: Tetragon
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/tetragon
+
+dashboards:
+  tetragon:
+    tetragon-runtime:
+      json: |
+        {
+          "uid": "tetragon-runtime",
+          "title": "Tetragon runtime events",
+          "tags": ["tetragon", "ebpf"],
+          "timezone": "browser",
+          "schemaVersion": 39,
+          "version": 1,
+          "refresh": "10s",
+          "time": { "from": "now-15m", "to": "now" },
+          "templating": {
+            "list": [
+              {
+                "name": "namespace",
+                "label": "Namespace",
+                "type": "custom",
+                "query": "ebpf-lab,ebpf-lab-mc",
+                "current": { "text": "ebpf-lab", "value": "ebpf-lab" },
+                "includeAll": false,
+                "multi": false
+              }
+            ]
+          },
+          "panels": [
+            {
+              "id": 1,
+              "type": "timeseries",
+              "title": "Process exec rate",
+              "datasource": { "type": "loki", "uid": "loki" },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+              "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "sum(count_over_time({job=\"tetragon\"} |= \"\\\"namespace\\\":\\\"$namespace\\\"\" |= \"process_exec\" [1m]))",
+                  "legendFormat": "exec/s"
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "type": "timeseries",
+              "title": "Process exit rate",
+              "datasource": { "type": "loki", "uid": "loki" },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+              "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "sum(count_over_time({job=\"tetragon\"} |= \"\\\"namespace\\\":\\\"$namespace\\\"\" |= \"process_exit\" [1m]))",
+                  "legendFormat": "exit/s"
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "type": "logs",
+              "title": "Tetragon events (namespace $namespace)",
+              "datasource": { "type": "loki", "uid": "loki" },
+              "gridPos": { "h": 15, "w": 24, "x": 0, "y": 8 },
+              "options": {
+                "showTime": true,
+                "wrapLogMessage": true,
+                "sortOrder": "Descending",
+                "enableLogDetails": true
+              },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "{job=\"tetragon\"} |= \"\\\"namespace\\\":\\\"$namespace\\\"\""
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "type": "text",
+              "title": "How to read this",
+              "gridPos": { "h": 5, "w": 24, "x": 0, "y": 23 },
+              "options": {
+                "mode": "markdown",
+                "content": "Events come from Tetragon's JSON log, shipped by Promtail to Loki.\n\n- `process_exec` / `process_exit` show runtime activity per pod and container.\n- Enforcement kills are not exported as policy events; validate them with the demo output (exit 137).\n- Network allow/deny lives in the Hubble UI, not here.\n- Set `namespace` to `ebpf-lab-mc` after running `make demo-multicontainer` with `KEEP=1`."
+              }
+            }
+          ]
+        }

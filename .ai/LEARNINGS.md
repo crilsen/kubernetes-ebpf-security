@@ -148,3 +148,25 @@ Context: After several Helm upgrades and a kind cluster recreation, Tetragon kil
 Evidence: events showed `ebpf-lab-control-plane` instead of pod names; the CRI/cgidmap values were correct and a DaemonSet restart did not help. `helm uninstall tetragon` followed by a fresh install restored pod/container names.
 Pattern / rule: When Tetragon events lack pod names, reinstall the release instead of only restarting pods. Verify with `tetra getevents --namespace ebpf-lab` before trusting the demo output.
 Promotion: none
+
+### L-011 — Loki needs a writable data directory
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: Installing Loki chart 7.3.0 with persistence disabled.
+Evidence: Loki crash-looped with `mkdir /var/loki: read-only file system`; enabling a 1 GiB PVC fixed it.
+Pattern / rule: Keep `singleBinary.persistence.enabled=true` for this chart; disabling it leaves no writable `/var/loki`.
+Promotion: none
+
+### L-012 — kind local-path provisioner can lose API access after Cilium
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: PVCs stayed Pending after Cilium replaced kube-proxy.
+Evidence: local-path-provisioner logged `dial tcp 10.96.0.1:443: connect: no route to host`; restarting the provisioner pod restored API access and the PVC bound.
+Pattern / rule: If PVCs never bind on kind with Cilium kube-proxy replacement, restart the `local-path-provisioner` deployment before disabling storage.
+Promotion: none

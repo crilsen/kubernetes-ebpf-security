@@ -1,0 +1,33 @@
+# Tails the JSON events that Tetragon writes on each node and ships them to Loki.
+config:
+  clients:
+    - url: http://loki.observability.svc.cluster.local:3100/loki/api/v1/push
+  snippets:
+    scrapeConfigs: |
+      - job_name: tetragon
+        static_configs:
+          - targets: [localhost]
+            labels:
+              job: tetragon
+              cluster: ebpf-lab
+              __path__: /var/log/tetragon/tetragon.log
+
+# Tetragon writes /var/run/cilium/tetragon/tetragon.log on the node.
+extraVolumes:
+  - name: tetragon-logs
+    hostPath:
+      path: /var/run/cilium/tetragon
+      type: Directory
+
+extraVolumeMounts:
+  - name: tetragon-logs
+    mountPath: /var/log/tetragon
+    readOnly: true
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi

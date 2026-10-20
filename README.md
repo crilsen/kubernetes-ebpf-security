@@ -25,6 +25,7 @@ user → web (nginx) → api (Go) → postgres
 5. **Controlled enforcement** — a dedicated workload kills shell execution; the baseline is untouched.
 6. **Denied endpoint** — the browser calls a Service with no allow rule, gets a 504, and Hubble shows the dropped flow.
 7. **Multi-container pod** — `front`, `back`, and `api` in one pod: external deny by container port, localhost traffic that Cilium cannot filter, and Tetragon enforcement in every container.
+8. **Runtime dashboard** — Grafana + Loki show Tetragon process events per namespace, pod, and container.
 
 The demo policies are deliberately narrow and use fictitious data. They are not a production security baseline.
 
@@ -80,9 +81,27 @@ Then:
 - Application: <http://127.0.0.1:8080>
 - API (direct): <http://127.0.0.1:8082/api/message>
 - Hubble UI: <http://127.0.0.1:8081>
+- Runtime dashboard (Grafana): <http://127.0.0.1:3001> — `admin` / `lab-demo-password`
 - Hubble Relay: `127.0.0.1:4245` for `hubble observe --server 127.0.0.1:4245`
 
 `make up` prints this endpoint list again at the end of every run.
+
+## Runtime dashboard (Grafana + Loki)
+
+`make up` also installs Loki, Promtail, and Grafana in the `observability` namespace. Promtail tails `/var/run/cilium/tetragon/tetragon.log` on each node and ships the JSON events to Loki. Grafana is provisioned with the Loki datasource and the **Tetragon runtime events** dashboard.
+
+- Grafana: <http://127.0.0.1:3001> (`admin` / `lab-demo-password`)
+- Dashboard: folder **Tetragon** → **Tetragon runtime events**
+- Variable `namespace`: `ebpf-lab` or `ebpf-lab-mc`
+- Validate: `make obs-check`
+
+What it shows: Tetragon `process_exec`/`process_exit` events per namespace, pod, and container, plus event rates.
+
+What it does **not** show:
+- network allow/deny — use the Hubble UI;
+- Sigkill enforcement events — Tetragon does not export them in this setup; the demo proves them by the `137` exit code.
+
+Loki runs as a single binary with a 1 GiB volume and 24h retention; the data is demo-only and disappears with the cluster.
 
 ```bash
 make demo-list
@@ -124,6 +143,7 @@ make eks-down     # destroy; asks for confirmation
 | CNI | Cilium (Kubernetes IPAM) | Cilium (AWS ENI IPAM) |
 | kube-proxy | Replaced by Cilium | Not installed; replaced by Cilium |
 | App exposure | NodePort `30080` mapped to host `8080` | ClusterIP + local port-forward only |
+| Observability | Hubble UI + Grafana/Loki (local only) | Cilium/Tetragon installed; no dashboard stack yet |
 | IaC | kind config + Helm values | Terraform + Helm values |
 | Teardown | `make down` | `make eks-down` |
 
@@ -133,6 +153,7 @@ make eks-down     # destroy; asks for confirmation
 make lint      # shellcheck, go vet/test, kustomize builds
 make verify    # lint + terraform fmt/validate
 make smoke     # local end-to-end check
+make obs-check # Grafana health, dashboard provisioning, and Tetragon events in Loki
 ```
 
 Record real runs under `evidence/YYYY-MM-DD-<target>-<scenario>/`. Nothing is marked passed before it runs; see [`evidence/README.md`](evidence/README.md).
@@ -148,6 +169,8 @@ Record real runs under `evidence/YYYY-MM-DD-<target>-<scenario>/`. Nothing is ma
 ## Known limitations
 
 - Demo-only credentials live in the manifests. Never reuse them.
+- Grafana uses the same demo password and serves over localhost port-forward only.
+- Loki stores data in a 1 GiB volume with 24h retention; it is not a production logging backend.
 - Tetragon enforcement covers a single, dedicated workload; it is not a general anti-shell control.
 - The local target was validated with warm image caches; a cold first run depends on registry throughput.
 - Cilium/Tetragon/EKS version compatibility must be rechecked when versions change.

@@ -79,6 +79,9 @@ helm upgrade --install tetragon cilium/tetragon \
   --values "$ROOT_DIR/deployments/local-kind/helm/tetragon-values.yaml" \
   --wait --timeout 15m
 
+step "install the runtime observability stack (Loki, Promtail, Grafana)"
+"$ROOT_DIR/scripts/obs-up.sh"
+
 step "build application images"
 docker build -t ebpf-lab/api:dev "$ROOT_DIR/app/api"
 docker build -t ebpf-lab/web:dev "$ROOT_DIR/app/web"
@@ -130,6 +133,7 @@ start_forward() {
 start_forward api ebpf-lab api "${API_PORT:-8082}" 8080
 start_forward hubble-ui kube-system hubble-ui "${HUBBLE_UI_PORT:-8081}" 80
 start_forward hubble-relay kube-system hubble-relay "${HUBBLE_RELAY_PORT:-4245}" 80
+start_forward grafana observability grafana "${GRAFANA_PORT:-3001}" 80
 
 log ""
 log "Local lab is ready."
@@ -138,6 +142,7 @@ log "  Web application   http://127.0.0.1:${WEB_PORT}"
 log "  API direct        http://127.0.0.1:${API_PORT:-8082}/api/message"
 log "  API health        http://127.0.0.1:${API_PORT:-8082}/healthz"
 log "  Hubble UI         http://127.0.0.1:${HUBBLE_UI_PORT:-8081}"
+log "  Runtime dashboard http://127.0.0.1:${GRAFANA_PORT:-3001} (admin / lab-demo-password)"
 log "  Hubble Relay      grpc://127.0.0.1:${HUBBLE_RELAY_PORT:-4245} (hubble observe --server)"
 log "  Kubernetes        context kind-$CLUSTER_NAME, namespace ebpf-lab"
 log ""

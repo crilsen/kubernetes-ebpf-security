@@ -51,6 +51,7 @@ Consequences:
 | TDR-001 | TDR | Terraform for the EKS target | Accepted | 2026-10-19 | inline |
 | TDR-002 | TDR | Go API, static nginx frontend, PostgreSQL | Accepted | 2026-10-19 | inline |
 | TDR-003 | TDR | Pin kind 0.33.0, Kubernetes 1.35.8, Cilium 1.20.3, Tetragon 1.7.1 | Accepted | 2026-10-19 | inline |
+| TDR-004 | TDR | Grafana + Loki + Promtail for Tetragon events | Accepted | 2026-10-20 | inline |
 
 ## Records
 
@@ -177,6 +178,28 @@ Current stable releases at adoption; EKS default was 1.36 but 1.35 keeps both ta
 
 Consequences:
 Verify Cilium compatibility before bumping Kubernetes; image digests are pinned in the kind config.
+
+## TDR-004 — Grafana + Loki + Promtail for Tetragon events
+
+Type: TDR
+Status: Accepted
+Date: 2026-10-20
+Owners: repository owner
+Supersedes: none
+
+Context:
+Tetragon has no UI and its events are only visible through `tetra getevents`. The owner asked for a dashboard view of runtime activity.
+
+Decision:
+Install Loki (single binary, filesystem, 1 GiB), Promtail (DaemonSet tailing `/var/run/cilium/tetragon/tetragon.log` via hostPath), and Grafana with a provisioned Loki datasource and a "Tetragon runtime events" dashboard. All stay in the `observability` namespace; Grafana is reachable only through a localhost port-forward.
+
+Reasoning:
+Reuses the JSON log Tetragon already writes, adds no agent to the app pods, and keeps the host free of runtime processes. Loki + Grafana are the smallest stack that supports log search and a dashboard.
+
+Consequences:
+- Loki data is ephemeral with 24h retention; not a production logging backend.
+- Sigkill enforcement events are not exported by Tetragon, so the dashboard cannot prove them; demos use the 137 exit code.
+- The EKS target does not install this stack yet (see `.ai/TASKS.md`).
 
 Do not backfill invented history. Record decisions that are observed, expressly documented, or approved during future work.
 
