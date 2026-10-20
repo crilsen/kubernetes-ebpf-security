@@ -1,0 +1,77 @@
+# Policies for the multi-container scenario.
+#
+# Cilium selects pods, not containers. Ports happen to map to containers here,
+# so 8080 is allowed and 8081/8082 are denied from outside. Traffic between the
+# containers themselves uses localhost and cannot be filtered at L3/L4.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mc-default-deny
+  namespace: ebpf-lab-mc
+spec:
+  endpointSelector: {}
+  ingress: []
+  egress: []
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mc-allow-dns
+  namespace: ebpf-lab-mc
+spec:
+  endpointSelector: {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+          rules:
+            dns:
+              - matchPattern: "*"
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mc-allow-front-ingress
+  namespace: ebpf-lab-mc
+spec:
+  endpointSelector:
+    matchLabels:
+      app: stack
+  ingress:
+    - fromEntities:
+        - world
+        - cluster
+        - host
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mc-allow-probe-egress
+  namespace: ebpf-lab-mc
+spec:
+  endpointSelector:
+    matchLabels:
+      app: probe
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: stack
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+            - port: "8081"
+              protocol: TCP
+            - port: "8082"
+              protocol: TCP

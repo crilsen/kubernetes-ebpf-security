@@ -49,6 +49,15 @@ func main() {
 	mux.HandleFunc("GET /api/message", func(w http.ResponseWriter, r *http.Request) {
 		handleMessage(w, r, db)
 	})
+	// Application-level denial used by the multi-container scenario to show the
+	// difference between a simulated 403 and a packet dropped by Cilium.
+	mux.HandleFunc("GET /policy-sim", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, http.StatusForbidden, map[string]any{
+			"denied":    true,
+			"simulated": true,
+			"reason":    "application-level simulation; no packet was blocked",
+		})
+	})
 
 	srv := &http.Server{
 		Addr:              addr,

@@ -1,0 +1,60 @@
+./demos/06-multicontainer.sh
+[lab] ==> deploying the multi-container pod
+namespace/ebpf-lab-mc created
+configmap/stack-front-conf created
+configmap/stack-front-html created
+deployment.apps/stack created
+service/stack created
+ciliumnetworkpolicy.cilium.io/mc-default-deny created
+ciliumnetworkpolicy.cilium.io/mc-allow-dns created
+ciliumnetworkpolicy.cilium.io/mc-allow-front-ingress created
+ciliumnetworkpolicy.cilium.io/mc-allow-probe-egress created
+Waiting for deployment "stack" rollout to finish: 0 of 1 updated replicas are available...
+deployment "stack" successfully rolled out
+[lab] ==> intra-pod traffic: front -> back and front -> api over localhost
+{"status":"ok"}
+{"status":"ok"}
+[lab] localhost traffic works and is not visible to Cilium policy
+[lab] ==> simulated denial (application-level, not a network drop)
+  HTTP/1.1 403 Forbidden
+wget: server returned error: HTTP/1.1 403 Forbidden
+[lab] policy-sim returned a simulated 403 (no packet was dropped)
+[lab] ==> applying Tetragon enforcement to every container in the pod
+tracingpolicy.cilium.io/mc-deny-shell created
+[lab] shell exec in container 'front' (expected: SIGKILL)
+command terminated with exit code 137
+[lab] container 'front' blocked the shell (exit 137)
+[lab] shell exec in container 'back' (expected: SIGKILL)
+command terminated with exit code 137
+[lab] container 'back' blocked the shell (exit 137)
+[lab] shell exec in container 'api' (expected: SIGKILL)
+command terminated with exit code 137
+[lab] container 'api' blocked the shell (exit 137)
+[lab] ==> external probe: front allowed, back/api denied by Cilium
+front :8080 -> HTTP 200
+[lab] container port 8081 denied from outside (exit 28)
+[lab] container port 8082 denied from outside (exit 28)
+[lab] hubble relay already forwarded at 127.0.0.1:4245
+[lab] ==> dropped flows recorded by Hubble
+Oct 20 00:16:22.664: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:22.664: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:23.673: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:23.673: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:24.696: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:24.696: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:25.720: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:25.720: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:26.745: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:26.745: ebpf-lab-mc/probe:53154 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8081 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:27.822: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:27.822: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:28.856: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:28.856: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:29.880: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:29.880: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:30.904: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:30.904: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+Oct 20 00:16:31.929: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Oct 20 00:16:31.929: ebpf-lab-mc/probe:39922 (ID:36246) <> ebpf-lab-mc/stack-6dc447d4f4-52v4s:8082 (ID:24500) Policy denied DROPPED (TCP Flags: SYN)
+[lab] ==> cleaning up
+[lab] ==> multi-container scenario complete

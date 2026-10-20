@@ -35,6 +35,7 @@ Deliver a working local lab first: kind + Cilium + Hubble + Tetragon + frontend 
 - Recorded evidence under `evidence/2026-10-19-local-baseline/`.
 - `make up` now forwards and prints every local endpoint: web 8080, API 8082, Hubble UI 8081, Hubble Relay 4245.
 - Added a live denied-path endpoint: the web pod calls `denied-target`, Cilium drops it, the browser gets 504, and Hubble shows `EGRESS DENIED`.
+- Added the multi-container scenario (`make demo-multicontainer`): `front`/`back`/`api` in one pod, enforcement in every container, Cilium deny on 8081/8082, simulated 403 on `/policy-sim`.
 
 ## Files Changed
 

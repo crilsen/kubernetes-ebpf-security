@@ -4,7 +4,7 @@ SHELL := /usr/bin/env bash
 ROOT := $(abspath .)
 TOFU_DIR := $(ROOT)/deployments/aws-eks/tofu
 
-.PHONY: help deps deps-check up down restart smoke demo-list demo-baseline demo-microsegmentation demo-observe demo-enforce demo-denied lint fmt verify eks-plan eks-up eks-down eks-smoke
+.PHONY: help deps deps-check up down restart smoke demo-list demo-baseline demo-microsegmentation demo-observe demo-enforce demo-denied demo-multicontainer lint fmt verify eks-plan eks-up eks-down eks-smoke
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-24s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -32,7 +32,8 @@ demo-list: ## List the demo scenarios
 		'make demo-microsegmentation' 'probe pod denied by default-deny' \
 		'make demo-observe' 'Tetragon process observation' \
 		'make demo-enforce' 'Tetragon shell-exec enforcement in a dedicated pod' \
-		'make demo-denied' 'live Cilium deny: browser gets 504, Hubble shows DROPPED'
+		'make demo-denied' 'live Cilium deny: browser gets 504, Hubble shows DROPPED' \
+		'make demo-multicontainer' '3 containers in one pod: enforcement + port-level deny'
 
 demo-baseline: ## Scenario 1: functional baseline and allowed flows
 	./demos/01-baseline.sh
@@ -48,6 +49,9 @@ demo-enforce: ## Scenario 4: Tetragon enforcement in a dedicated namespace
 
 demo-denied: ## Scenario 5: live deny visible from the browser (504 + DROPPED flow)
 	./demos/05-denied-endpoint.sh
+
+demo-multicontainer: ## Scenario 6: 3 containers in one pod, enforcement and port-level deny
+	./demos/06-multicontainer.sh
 
 lint: ## Static checks available without a cluster
 	shellcheck scripts/*.sh scripts/lib/*.sh demos/*.sh

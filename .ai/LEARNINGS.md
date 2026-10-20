@@ -115,3 +115,25 @@ Context: `make up` restarts deployments on every run to pick up `:dev` images.
 Evidence: nginx returned 502 (`connect() failed: Connection refused`) for `/api/message` right after a rollout; the same request succeeded 10 seconds later.
 Pattern / rule: Retry the end-to-end API check for a bounded window after a rollout instead of treating the first 502/504 as a product failure. Kubelet readiness does not guarantee Service endpoint propagation.
 Promotion: none
+
+### L-008 — Cilium selects pods, not containers
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: policies/cilium
+Context: Building a pod with front, back, and api containers and trying to deny traffic between them.
+Evidence: localhost traffic between containers returned `{"status":"ok"}`; policies only affected traffic entering the pod from outside. Denying 8081/8082 worked because ports map to containers.
+Pattern / rule: L3/L4 policy cannot separate containers in the same pod. Expose each container on a distinct port when the demo needs a container-level deny, and state that intra-pod traffic bypasses Cilium.
+Promotion: none
+
+### L-009 — Tetragon enforcement applies to every container in a selected pod
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: policies/tetragon
+Context: Applying one TracingPolicy to a three-container pod.
+Evidence: shell exec was killed (exit 137) in `front`, `back`, and `api`; the policy has no container selector.
+Pattern / rule: Use `podSelector` for pod-wide enforcement; a per-container rule would need a different mechanism.
+Promotion: none

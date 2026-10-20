@@ -1,0 +1,53 @@
+# Enforcement for the multi-container scenario. Tetragon selects the pod, so
+# every container in it is subject to the rule: a shell exec anywhere in the
+# pod receives SIGKILL. This is a narrow demo, not a general control.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: mc-deny-shell
+spec:
+  podSelector:
+    matchLabels:
+      ebpf-lab.io/multicontainer: "true"
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/bin/sh"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/bin/bash"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/usr/bin/sh"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/usr/bin/bash"
+          matchActions:
+            - action: Sigkill
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/usr/bin/bash"
+          matchActions:
+            - action: Sigkill

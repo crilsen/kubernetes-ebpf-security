@@ -24,6 +24,7 @@ user → web (nginx) → api (Go) → postgres
 4. **Runtime observation** — Tetragon reports process execution without blocking anything.
 5. **Controlled enforcement** — a dedicated workload kills shell execution; the baseline is untouched.
 6. **Denied endpoint** — the browser calls a Service with no allow rule, gets a 504, and Hubble shows the dropped flow.
+7. **Multi-container pod** — `front`, `back`, and `api` in one pod: external deny by container port, localhost traffic that Cilium cannot filter, and Tetragon enforcement in every container.
 
 The demo policies are deliberately narrow and use fictitious data. They are not a production security baseline.
 
@@ -90,6 +91,7 @@ make demo-microsegmentation
 make demo-observe
 make demo-enforce
 make demo-denied
+make demo-multicontainer
 make down
 ```
 

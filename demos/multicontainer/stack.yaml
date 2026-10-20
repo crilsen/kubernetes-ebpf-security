@@ -1,0 +1,240 @@
+# Multi-container scenario: one pod with front, back and api containers.
+# Container ports map to policy ports, so Cilium can allow 8080 and deny
+# 8081/8082 from outside. Traffic between the containers uses localhost and is
+# not subject to L3/L4 policy.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ebpf-lab-mc
+  labels:
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stack-front-conf
+  namespace: ebpf-lab-mc
+data:
+  default.conf: |
+    server {
+        listen 8080;
+        server_name _;
+        root /usr/share/nginx/html;
+
+        location = /healthz {
+            add_header Content-Type text/plain;
+            return 200 "ok\n";
+        }
+
+        location /back/ {
+            proxy_pass http://127.0.0.1:8081/;
+            proxy_connect_timeout 2s;
+            proxy_read_timeout 5s;
+        }
+
+        location /api/ {
+            proxy_pass http://127.0.0.1:8082/;
+            proxy_connect_timeout 2s;
+            proxy_read_timeout 5s;
+        }
+
+        location = /sim {
+            proxy_pass http://127.0.0.1:8081/policy-sim;
+            proxy_connect_timeout 2s;
+            proxy_read_timeout 5s;
+        }
+
+        location / {
+            try_files $uri /index.html;
+        }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stack-front-html
+  namespace: ebpf-lab-mc
+data:
+  index.html: |
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <title>Multi-container pod</title>
+        <style>
+          body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+                 font: 16px/1.5 ui-sans-serif, system-ui, sans-serif;
+                 background: #0b1220; color: #e6edf7; }
+          main { width: min(640px, 90vw); }
+          h1 { font-size: 1.4rem; }
+          li { margin: .5rem 0; }
+          code { color: #7dd3fc; }
+          .muted { color: #9fb0c7; }
+        </style>
+      </head>
+      <body>
+        <main>
+          <h1>One pod, three containers</h1>
+          <p class="muted">front → back → api all over localhost.</p>
+          <ul>
+            <li><code>front</code> :8080 — this page</li>
+            <li><code>back</code> :8081 — <a href="/back/healthz">/back/healthz</a></li>
+            <li><code>api</code> :8082 — <a href="/api/healthz">/api/healthz</a></li>
+            <li>simulated deny — <a href="/sim">/sim</a> (application-level 403)</li>
+          </ul>
+          <p class="muted">Cilium allows 8080 from outside and drops 8081/8082.
+          Localhost traffic between the containers is not filtered.</p>
+        </main>
+      </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stack
+  namespace: ebpf-lab-mc
+  labels:
+    app: stack
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stack
+  template:
+    metadata:
+      labels:
+        app: stack
+        app.kubernetes.io/part-of: kubernetes-ebpf-security
+        ebpf-lab.io/multicontainer: "true"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: front
+          image: ebpf-lab/web:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: front
+              containerPort: 8080
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: front
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 25m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 64Mi }
+          volumeMounts:
+            - name: front-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: front-html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: run
+              mountPath: /var/run
+        - name: back
+          image: ebpf-lab/api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: back
+              containerPort: 8081
+          env:
+            - name: LISTEN_ADDR
+              value: ":8081"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: back
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 25m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+        - name: api
+          image: ebpf-lab/api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: api
+              containerPort: 8082
+          env:
+            - name: LISTEN_ADDR
+              value: ":8082"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: api
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 25m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+      volumes:
+        - name: front-conf
+          configMap:
+            name: stack-front-conf
+        - name: front-html
+          configMap:
+            name: stack-front-html
+        - name: cache
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stack
+  namespace: ebpf-lab-mc
+  labels:
+    app: stack
+    app.kubernetes.io/part-of: kubernetes-ebpf-security
+spec:
+  type: ClusterIP
+  selector:
+    app: stack
+  ports:
+    - name: front
+      port: 8080
+      targetPort: front
+    - name: back
+      port: 8081
+      targetPort: back
+    - name: api
+      port: 8082
+      targetPort: api
