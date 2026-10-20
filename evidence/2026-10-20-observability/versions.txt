@@ -1,3 +1,4 @@
 Grafana: docker.io/grafana/grafana:12.3.1
 Loki: docker.io/grafana/loki:3.6.11
 Promtail: docker.io/grafana/promtail:3.5.1
+Prometheus: quay.io/prometheus/prometheus:v3.15.0

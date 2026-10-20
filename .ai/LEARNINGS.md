@@ -170,3 +170,14 @@ Context: PVCs stayed Pending after Cilium replaced kube-proxy.
 Evidence: local-path-provisioner logged `dial tcp 10.96.0.1:443: connect: no route to host`; restarting the provisioner pod restored API access and the PVC bound.
 Pattern / rule: If PVCs never bind on kind with Cilium kube-proxy replacement, restart the `local-path-provisioner` deployment before disabling storage.
 Promotion: none
+
+### L-013 — Do not redefine `global` in the Prometheus chart config
+
+Date: 2026-10-20
+Status: active
+Confidence: observed
+Scope: deployments/local-kind
+Context: Adding scrape configs through `serverFiles.prometheus.yml`.
+Evidence: Prometheus crash-looped with `field global already set in type config.plain`; the chart already renders `server.global`. Moving the scrape interval there and removing `global` from `serverFiles` fixed it.
+Pattern / rule: Keep global settings under `server.global`; put only `scrape_configs` in `serverFiles.prometheus.yml`.
+Promotion: none

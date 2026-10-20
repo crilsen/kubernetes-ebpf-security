@@ -1,0 +1,46 @@
+# Minimal in-cluster Prometheus: scrapes Hubble metrics and Tetragon metrics.
+# No Alertmanager, no exporters, no persistence — this is a demo backend.
+
+fullnameOverride: prometheus
+
+server:
+  retention: "2d"
+  global:
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    evaluation_interval: 15s
+  persistentVolume:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+  service:
+    servicePort: 80
+
+alertmanager:
+  enabled: false
+kube-state-metrics:
+  enabled: false
+prometheus-node-exporter:
+  enabled: false
+prometheus-pushgateway:
+  enabled: false
+
+serverFiles:
+  prometheus.yml:
+    scrape_configs:
+      # Headless service; one A record per Cilium agent.
+      - job_name: hubble
+        dns_sd_configs:
+          - names:
+              - hubble-metrics.kube-system.svc.cluster.local
+            type: A
+            port: 9965
+      - job_name: tetragon
+        static_configs:
+          - targets:
+              - tetragon.kube-system.svc.cluster.local:2112

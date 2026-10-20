@@ -25,7 +25,7 @@ user → web (nginx) → api (Go) → postgres
 5. **Controlled enforcement** — a dedicated workload kills shell execution; the baseline is untouched.
 6. **Denied endpoint** — the browser calls a Service with no allow rule, gets a 504, and Hubble shows the dropped flow.
 7. **Multi-container pod** — `front`, `back`, and `api` in one pod: external deny by container port, localhost traffic that Cilium cannot filter, and Tetragon enforcement in every container.
-8. **Runtime dashboard** — Grafana + Loki show Tetragon process events per namespace, pod, and container.
+8. **Runtime dashboard** — Grafana + Loki + Prometheus show Tetragon process events and Hubble flow/drop metrics.
 
 The demo policies are deliberately narrow and use fictitious data. They are not a production security baseline.
 
@@ -86,22 +86,29 @@ Then:
 
 `make up` prints this endpoint list again at the end of every run.
 
-## Runtime dashboard (Grafana + Loki)
+## Runtime dashboard (Grafana + Loki + Prometheus)
 
-`make up` also installs Loki, Promtail, and Grafana in the `observability` namespace. Promtail tails `/var/run/cilium/tetragon/tetragon.log` on each node and ships the JSON events to Loki. Grafana is provisioned with the Loki datasource and the **Tetragon runtime events** dashboard.
+`make up` also installs Loki, Promtail, Prometheus, and Grafana in the `observability` namespace.
+
+- **Loki path:** Promtail tails `/var/run/cilium/tetragon/tetragon.log` on each node and ships the JSON events.
+- **Prometheus path:** scrapes the Cilium/Hubble metrics endpoint (`hubble-metrics:9965`) and the Tetragon metrics service (`tetragon:2112`) every 15s.
+
+Grafana is provisioned with both datasources and two dashboards:
+
+| Dashboard | Data | Shows |
+| --- | --- | --- |
+| **Tetragon runtime events** | Loki | process exec/exit per namespace, pod, and container |
+| **Hubble and Tetragon metrics** | Prometheus | flows by verdict, drops by reason, Tetragon event rates, scrape health |
 
 - Grafana: <http://127.0.0.1:3001> (`admin` / `lab-demo-password`)
-- Dashboard: folder **Tetragon** → **Tetragon runtime events**
-- Variable `namespace`: `ebpf-lab` or `ebpf-lab-mc`
-- Validate: `make obs-check`
-
-What it shows: Tetragon `process_exec`/`process_exit` events per namespace, pod, and container, plus event rates.
+- Dashboards live in the **Tetragon** folder.
+- Validate everything with `make obs-check`.
 
 What it does **not** show:
-- network allow/deny — use the Hubble UI;
+- per-flow details (source/destination, policy verdict) — use the Hubble UI;
 - Sigkill enforcement events — Tetragon does not export them in this setup; the demo proves them by the `137` exit code.
 
-Loki runs as a single binary with a 1 GiB volume and 24h retention; the data is demo-only and disappears with the cluster.
+Loki runs as a single binary with a 1 GiB volume and 24h retention; Prometheus keeps 2 days of metrics with no volume. Both are demo-only and disappear with the cluster.
 
 ```bash
 make demo-list
@@ -143,7 +150,7 @@ make eks-down     # destroy; asks for confirmation
 | CNI | Cilium (Kubernetes IPAM) | Cilium (AWS ENI IPAM) |
 | kube-proxy | Replaced by Cilium | Not installed; replaced by Cilium |
 | App exposure | NodePort `30080` mapped to host `8080` | ClusterIP + local port-forward only |
-| Observability | Hubble UI + Grafana/Loki (local only) | Cilium/Tetragon installed; no dashboard stack yet |
+| Observability | Hubble UI + Grafana/Loki/Prometheus (local only) | Cilium/Tetragon installed; no dashboard stack yet |
 | IaC | kind config + Helm values | Terraform + Helm values |
 | Teardown | `make down` | `make eks-down` |
 

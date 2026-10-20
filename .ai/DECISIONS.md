@@ -191,13 +191,13 @@ Context:
 Tetragon has no UI and its events are only visible through `tetra getevents`. The owner asked for a dashboard view of runtime activity.
 
 Decision:
-Install Loki (single binary, filesystem, 1 GiB), Promtail (DaemonSet tailing `/var/run/cilium/tetragon/tetragon.log` via hostPath), and Grafana with a provisioned Loki datasource and a "Tetragon runtime events" dashboard. All stay in the `observability` namespace; Grafana is reachable only through a localhost port-forward.
+Install Loki (single binary, filesystem, 1 GiB), Promtail (DaemonSet tailing `/var/run/cilium/tetragon/tetragon.log` via hostPath), Prometheus (scraping Hubble and Tetragon metrics), and Grafana with provisioned datasources and two dashboards: "Tetragon runtime events" (Loki) and "Hubble and Tetragon metrics" (Prometheus). All stay in the `observability` namespace; Grafana is reachable only through a localhost port-forward.
 
 Reasoning:
-Reuses the JSON log Tetragon already writes, adds no agent to the app pods, and keeps the host free of runtime processes. Loki + Grafana are the smallest stack that supports log search and a dashboard.
+Logs answer "what ran" and metrics answer "how much was allowed or dropped", reusing the endpoints both projects already expose. No agent is added to the app pods, and the host stays free of runtime processes.
 
 Consequences:
-- Loki data is ephemeral with 24h retention; not a production logging backend.
+- Loki data is ephemeral with 24h retention; Prometheus keeps 2 days without persistence. Neither is a production backend.
 - Sigkill enforcement events are not exported by Tetragon, so the dashboard cannot prove them; demos use the 137 exit code.
 - The EKS target does not install this stack yet (see `.ai/TASKS.md`).
 

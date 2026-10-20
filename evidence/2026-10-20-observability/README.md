@@ -9,6 +9,7 @@ Same kind cluster as the earlier runs. See [`versions.txt`](versions.txt):
 | Grafana | 12.3.1 (chart 10.5.15) |
 | Loki | 3.6.11 (chart 7.3.0) |
 | Promtail | 3.5.1 (chart 6.17.1) |
+| Prometheus | 3.15.0 (chart 29.37.0) |
 | Tetragon | 1.7.1 |
 
 ## Data flow
@@ -19,9 +20,14 @@ Tetragon (per node) → /var/run/cilium/tetragon/tetragon.log
                            ▼
                     Promtail (DaemonSet) → Loki (single binary, 1 GiB)
                                                  │
-                                                 ▼
-                                      Grafana (Loki datasource)
+Cilium/Hubble metrics :9965 ─┐                   ▼
+Tetragon metrics :2112 ──────┴→ Prometheus → Grafana
 ```
+
+Grafana has two provisioned dashboards:
+
+- **Tetragon runtime events** (Loki): process events with pod/container names.
+- **Hubble and Tetragon metrics** (Prometheus): flows by verdict, drops by reason, Tetragon event rates, and scrape health.
 
 ## Command and results
 
@@ -30,7 +36,9 @@ Command: `make obs-check` (see [`obs-check.log`](obs-check.log)).
 | Check | Expected | Observed |
 | --- | --- | --- |
 | Grafana health | `database: ok` | `{"database":"ok","version":"12.3.1"}` |
-| Provisioned dashboard | “Tetragon runtime events” present | Found in folder `Tetragon` |
+| Provisioned dashboards | Both Tetragon dashboards | Found in folder `Tetragon` |
+| Prometheus targets | `hubble` and `tetragon` up | `hubble up=1`, `tetragon up=1` |
+| Hubble metrics | Non-zero flow counter | `hubble_flows_processed_total=41234` |
 | Tetragon events in Loki | At least one `process_exec` | 5 events returned |
 
 A manual query with `{job="tetragon"} |= "\"namespace\":\"ebpf-lab\""` returned real `process_exec` records with pod and container names, confirming the full path from the eBPF event to the dashboard.

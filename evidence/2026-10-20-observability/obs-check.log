@@ -1,6 +1,11 @@
 ./scripts/obs-check.sh
 [lab] ==> Grafana health
-[lab] ==> provisioned dashboard
+[lab] ==> provisioned dashboards
+[lab] ==> Prometheus scrape targets
+hubble up=1
+tetragon up=1
+[lab] ==> Hubble metrics
+hubble_flows_processed_total=42503
 [lab] ==> Tetragon events in Loki
 events found: 5
 [lab] ==> runtime dashboard OK: http://127.0.0.1:3001 (admin / lab-demo-password)

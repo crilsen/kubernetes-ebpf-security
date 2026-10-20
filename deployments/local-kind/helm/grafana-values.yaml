@@ -31,6 +31,14 @@ datasources:
         isDefault: true
         jsonData:
           maxLines: 5000
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.observability.svc.cluster.local
+        isDefault: false
+        jsonData:
+          timeInterval: 15s
 
 dashboardProviders:
   dashboardproviders.yaml:
@@ -129,6 +137,90 @@ dashboards:
               "options": {
                 "mode": "markdown",
                 "content": "Events come from Tetragon's JSON log, shipped by Promtail to Loki.\n\n- `process_exec` / `process_exit` show runtime activity per pod and container.\n- Enforcement kills are not exported as policy events; validate them with the demo output (exit 137).\n- Network allow/deny lives in the Hubble UI, not here.\n- Set `namespace` to `ebpf-lab-mc` after running `make demo-multicontainer` with `KEEP=1`."
+              }
+            }
+          ]
+        }
+    network-runtime:
+      json: |
+        {
+          "uid": "network-runtime",
+          "title": "Hubble and Tetragon metrics",
+          "tags": ["hubble", "tetragon", "ebpf"],
+          "timezone": "browser",
+          "schemaVersion": 39,
+          "version": 1,
+          "refresh": "15s",
+          "time": { "from": "now-30m", "to": "now" },
+          "panels": [
+            {
+              "id": 1,
+              "type": "timeseries",
+              "title": "Hubble flows by verdict",
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+              "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "sum by (verdict) (rate(hubble_flows_processed_total[1m]))",
+                  "legendFormat": "{{verdict}}"
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "type": "timeseries",
+              "title": "Dropped flows by reason",
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+              "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "sum by (reason) (rate(hubble_drop_total[1m]))",
+                  "legendFormat": "{{reason}}"
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "type": "timeseries",
+              "title": "Tetragon events by type",
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+              "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "sum by (type) (rate(tetragon_events_total[1m]))",
+                  "legendFormat": "{{type}}"
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "type": "table",
+              "title": "Scrape targets",
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+              "targets": [
+                {
+                  "refId": "A",
+                  "expr": "up{job=~\"hubble|tetragon\"}",
+                  "format": "table",
+                  "instant": true
+                }
+              ]
+            },
+            {
+              "id": 5,
+              "type": "text",
+              "title": "What is measured",
+              "gridPos": { "h": 5, "w": 24, "x": 0, "y": 16 },
+              "options": {
+                "mode": "markdown",
+                "content": "Prometheus scrapes the Cilium/Hubble metrics endpoint and the Tetragon metrics service every 15s.\n\n- **Flows by verdict** — forwarded vs dropped L3/L4 flows seen by Hubble.\n- **Drops by reason** — policy deny, unreachable, etc.\n- **Tetragon events** — runtime events by type (PROCESS_EXEC, PROCESS_EXIT, ...).\n\nDetailed per-flow inspection stays in the Hubble UI; per-pod process logs stay in the Loki dashboard."
               }
             }
           ]
